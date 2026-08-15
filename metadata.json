@@ -1,0 +1,6 @@
+{
+  "name": "Kalakalan",
+  "description": "A community barter and trade marketplace platform with tier-based matching, listing management, and live trade negotiation chats.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
