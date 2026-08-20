@@ -92,21 +92,21 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
         </div>
 
         {/* Right / Modal Body */}
-        <div className="p-5 sm:p-7 md:w-7/12 overflow-y-auto space-y-5 flex-1 flex flex-col justify-between">
-          <div className="space-y-4">
+        <div className="p-6 sm:p-8 md:w-7/12 overflow-y-auto space-y-6 flex-1 flex flex-col justify-between">
+          <div className="space-y-5">
             {/* Header info */}
             <div>
-              <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">
+              <div className="flex items-center gap-2 text-sm font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-1.5">
                 <span>{item.category}</span>
                 <span>•</span>
                 <span>Tier {item.tier} Parity</span>
               </div>
 
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight">{item.title}</h2>
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">{item.title}</h2>
 
-              <div className="flex items-center gap-3 mt-2 text-xs text-slate-500 dark:text-slate-400">
+              <div className="flex items-center gap-3 mt-2.5 text-sm text-slate-600 dark:text-slate-400 font-medium">
                 <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-emerald-500" />
+                  <MapPin className="w-4 h-4 text-emerald-500" />
                   {item.location}
                 </span>
                 <span>•</span>
@@ -115,104 +115,104 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
             </div>
 
             {/* Owner Info & Trust Score */}
-            <div className={`p-3.5 rounded-2xl border flex items-center justify-between ${
-              isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-50 border-slate-200'
+            <div className={`p-4 rounded-2xl border flex items-center justify-between ${
+              isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
             }`}>
               <div className="flex items-center gap-3">
                 <img
                   src={item.owner.avatar}
                   alt={item.owner.name}
-                  className="w-11 h-11 rounded-full object-cover ring-2 ring-emerald-500/40 shrink-0"
+                  className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/40 shrink-0"
                 />
                 <div>
-                  <div className="flex items-center gap-1.5 font-bold text-sm">
+                  <div className="flex items-center gap-1.5 font-bold text-base text-slate-900 dark:text-white">
                     <span>{item.owner.name}</span>
                     <ShieldCheck className="w-4 h-4 text-emerald-500" />
                   </div>
-                  <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
+                  <div className="text-sm text-emerald-700 dark:text-emerald-400 font-bold">
                     Trust Rating ★ {item.owner.trustScore}
                   </div>
                 </div>
               </div>
 
-              <div className="text-right text-xs text-slate-400">
-                <div className="font-semibold text-slate-700 dark:text-slate-300">{item.owner.completedTrades} Completed Trades</div>
-                <div className="text-[11px]">Verified Student</div>
+              <div className="text-right">
+                <div className="font-bold text-sm text-slate-900 dark:text-slate-200">{item.owner.completedTrades} Completed</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Verified Student</div>
               </div>
             </div>
 
             {/* Description */}
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+              <h4 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 mb-2">
                 Item Description &amp; Condition
               </h4>
-              <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+              <p className={`text-base leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                 {item.description}
               </p>
             </div>
 
             {/* Desired Trade / Wanted items */}
-            <div className={`p-3.5 rounded-2xl border ${
+            <div className={`p-4 rounded-2xl border ${
               isDark 
                 ? 'bg-emerald-950/20 border-emerald-900/50 text-emerald-300' 
-                : 'bg-emerald-50 border-emerald-200 text-emerald-950'
+                : 'bg-emerald-50/80 border-emerald-200 text-emerald-950'
             }`}>
-              <div className="flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1">
+              <div className="flex items-center gap-2 font-bold text-sm uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-1.5">
                 <ArrowRightLeft className="w-4 h-4" />
                 Trader is Looking For
               </div>
-              <p className="text-sm font-semibold">
+              <p className="text-base font-semibold text-slate-900 dark:text-white">
                 {item.wantedItems}
               </p>
             </div>
           </div>
 
           {/* Proposal Action Section */}
-          <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
+          <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
             {showProposalForm ? (
-              <form onSubmit={handleSendProposal} className={`p-4 rounded-2xl border space-y-3 ${
+              <form onSubmit={handleSendProposal} className={`p-5 rounded-3xl border space-y-4 ${
                 isDark ? 'bg-slate-900 border-emerald-500/40' : 'bg-white border-emerald-300 shadow-sm'
               }`}>
-                <h4 className="text-sm font-bold flex items-center justify-between">
+                <h4 className="text-base font-bold flex items-center justify-between text-slate-900 dark:text-white">
                   <span>Propose Your Item in Exchange</span>
-                  <span className="text-xs text-emerald-600 dark:text-emerald-400">Tier {item.tier} Barter</span>
+                  <span className="text-sm text-emerald-700 dark:text-emerald-400 font-bold">Tier {item.tier} Barter</span>
                 </h4>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-400 mb-1.5">
                     What item will you offer to {item.owner.name}? *
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Raspberry Pi 4 Kit, Mechanical Keyboard, or Textbook"
+                    placeholder="e.g. Raspberry Pi 4 Kit, Mechanical Keyboard, or CS Textbook"
                     value={offeringTitle}
                     onChange={(e) => setOfferingTitle(e.target.value)}
-                    className={`w-full px-3.5 py-2.5 rounded-xl text-sm border outline-none transition-all ${
+                    className={`w-full px-4 py-3 rounded-2xl text-base border outline-none transition-all ${
                       isDark 
-                        ? 'bg-slate-800 border-slate-700 focus:border-emerald-500 text-white' 
-                        : 'bg-slate-50 border-slate-200 focus:border-emerald-600 text-slate-900'
+                        ? 'bg-slate-800 border-slate-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-white placeholder:text-slate-500' 
+                        : 'bg-slate-50 border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15 text-slate-900 placeholder:text-slate-400'
                     }`}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1">
+                  <label className="block text-sm font-bold text-slate-700 dark:text-slate-400 mb-1.5">
                     Select Your Offering's Value Tier
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-2.5">
                     {[
-                      { tier: 1 as ValueTier, label: 'Tier 1 (<$50)' },
-                      { tier: 2 as ValueTier, label: 'Tier 2 ($50-$150)' },
-                      { tier: 3 as ValueTier, label: 'Tier 3 (>$150)' },
+                      { tier: 1 as ValueTier, label: 'Tier 1 (<₱2.5k)' },
+                      { tier: 2 as ValueTier, label: 'Tier 2 (₱2.5k-₱7.5k)' },
+                      { tier: 3 as ValueTier, label: 'Tier 3 (₱7.5k+)' },
                     ].map((t) => (
                       <button
                         type="button"
                         key={t.tier}
                         onClick={() => setOfferingTier(t.tier)}
-                        className={`py-2 px-2 rounded-xl text-xs font-semibold border text-center transition-all ${
+                        className={`py-2.5 px-2 rounded-2xl text-xs font-bold border text-center transition-all ${
                           offeringTier === t.tier
-                            ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                            ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                             : isDark
                             ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
                             : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
@@ -225,16 +225,16 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
                 </div>
 
                 {isSent ? (
-                  <div className="p-3 bg-emerald-600 text-white rounded-xl flex items-center justify-center gap-2 font-bold text-sm shadow-md">
+                  <div className="p-4 bg-emerald-600 text-white rounded-2xl flex items-center justify-center gap-2 font-bold text-base shadow-md">
                     <CheckCircle2 className="w-5 h-5" />
                     Barter Proposal Sent! Opening Chat...
                   </div>
                 ) : (
-                  <div className="flex gap-2 pt-2">
+                  <div className="flex gap-3 pt-2">
                     <button
                       type="button"
                       onClick={() => setShowProposalForm(false)}
-                      className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold border transition-colors ${
+                      className={`flex-1 py-3 px-4 rounded-2xl text-sm font-bold border transition-colors ${
                         isDark ? 'border-slate-700 hover:bg-slate-800 text-slate-300' : 'border-slate-200 hover:bg-slate-100 text-slate-700'
                       }`}
                     >
@@ -242,7 +242,7 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
                     </button>
                     <button
                       type="submit"
-                      className="flex-2 py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all"
+                      className="flex-2 py-3 px-5 rounded-2xl text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all"
                     >
                       <Send className="w-4 h-4" />
                       Send Barter Proposal
@@ -253,9 +253,9 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
             ) : (
               <button
                 onClick={() => setShowProposalForm(true)}
-                className="w-full py-3.5 px-4 rounded-2xl font-bold text-sm bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white shadow-md hover:shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all"
+                className="w-full py-4 px-5 rounded-2xl font-bold text-base bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white shadow-md hover:shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all"
               >
-                <ArrowRightLeft className="w-4 h-4" />
+                <ArrowRightLeft className="w-5 h-5" />
                 <span>Propose a Barter Exchange</span>
               </button>
             )}

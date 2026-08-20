@@ -166,7 +166,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
         <div className="lg:col-span-5 space-y-6">
           {/* Image Upload Box */}
           <div className="space-y-3">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400">
               Item Photo
             </label>
             
@@ -225,10 +225,10 @@ export const UploadView: React.FC<UploadViewProps> = ({
                   <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
                     <UploadCloud className="w-6 h-6" />
                   </div>
-                  <div className="text-xs font-bold">
+                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200">
                     Drop your image here or <span className="text-emerald-600 dark:text-emerald-400 underline">browse</span>
                   </div>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                     Supports JPG, PNG, WEBP up to 10MB
                   </p>
                 </div>
@@ -237,7 +237,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
 
             {/* Quick Sample Presets */}
             <div className="space-y-1.5">
-              <span className="text-[11px] text-slate-400 font-semibold">Or pick a quick sample cover:</span>
+              <span className="text-[11px] text-slate-600 dark:text-slate-400 font-semibold">Or pick a quick sample cover:</span>
               <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                 {SAMPLE_PRESET_IMAGES.map((preset, idx) => (
                   <button
@@ -248,12 +248,12 @@ export const UploadView: React.FC<UploadViewProps> = ({
                       setCategory(preset.category);
                       setSelectedTier(preset.tier);
                     }}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-medium border flex items-center gap-1.5 shrink-0 transition-all ${
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold border flex items-center gap-1.5 shrink-0 transition-all ${
                       imagePreview === preset.url
-                        ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                        ? 'border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
                         : isDark
-                        ? 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
-                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
+                        ? 'border-slate-800 bg-slate-900 text-slate-300 hover:text-white'
+                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100'
                     }`}
                   >
                     <ImageIcon className="w-3.5 h-3.5" />
@@ -266,13 +266,13 @@ export const UploadView: React.FC<UploadViewProps> = ({
 
           {/* Live Preview Card */}
           <div className="space-y-2">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400">
+            <label className="block text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400">
               Live Marketplace Preview
             </label>
-            <div className={`rounded-2xl overflow-hidden border transition-all ${
-              isDark ? 'bg-[#111c38] border-slate-800' : 'bg-white border-slate-200 shadow-xs'
+            <div className={`rounded-3xl overflow-hidden border transition-all ${
+              isDark ? 'bg-[#0B132B] border-slate-800' : 'bg-white border-slate-200 shadow-sm'
             }`}>
-              <div className="relative h-44 w-full bg-slate-900 overflow-hidden">
+              <div className="relative h-48 w-full bg-slate-950 overflow-hidden">
                 <SafeImage
                   src={currentPreviewImage}
                   alt={title || 'Item Preview'}
@@ -280,31 +280,34 @@ export const UploadView: React.FC<UploadViewProps> = ({
                   category={category}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-2.5 right-2.5">
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold text-white shadow-xs ${
+                <div className="absolute top-3 right-3">
+                  <span className={`px-3 py-1 rounded-xl text-xs font-bold text-white shadow-xs ${
                     selectedTier === 1 ? 'bg-emerald-600' : selectedTier === 2 ? 'bg-sky-600' : 'bg-indigo-600'
                   }`}>
                     Tier {selectedTier}
                   </span>
                 </div>
-                <div className="absolute top-2.5 left-2.5">
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/60 text-white backdrop-blur-xs">
+                <div className="absolute top-3 left-3">
+                  <span className="px-3 py-1 rounded-xl text-xs font-bold bg-slate-950/70 text-white backdrop-blur-md border border-white/15">
                     {category}
                   </span>
                 </div>
               </div>
-              <div className="p-4 space-y-1.5">
-                <h4 className="font-bold text-base tracking-tight truncate">
+              <div className="p-5 space-y-2.5">
+                <h4 className="font-bold text-lg tracking-tight truncate text-slate-900 dark:text-white leading-snug">
                   {title.trim() || 'Untitled Listing'}
                 </h4>
-                <p className="text-xs line-clamp-2 text-slate-400">
+                <p className="text-sm line-clamp-2 text-slate-600 dark:text-slate-300 leading-relaxed">
                   {description.trim() || 'Enter item details and condition description on the right.'}
                 </p>
-                <div className={`p-2 rounded-lg text-[11px] font-medium truncate ${
-                  isDark ? 'bg-slate-900 text-emerald-300' : 'bg-emerald-50 text-emerald-800'
+                <div className={`p-3 rounded-2xl text-sm font-medium flex items-center gap-2.5 border ${
+                  isDark ? 'bg-emerald-950/25 border-emerald-500/20 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-950'
                 }`}>
-                  <span className="font-bold">Want: </span>
-                  {wantedItems.trim() || 'What you want in return'}
+                  <ArrowRightLeft className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <div className="truncate">
+                    <span className="font-bold text-emerald-700 dark:text-emerald-400">Looking for: </span>
+                    <span>{wantedItems.trim() || 'What you want in return'}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -312,10 +315,10 @@ export const UploadView: React.FC<UploadViewProps> = ({
         </div>
 
         {/* Right Column: Structured Form Fields */}
-        <div className="lg:col-span-7 space-y-5">
+        <div className="lg:col-span-7 space-y-6">
           {/* Item Title */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 mb-2">
               Item Title *
             </label>
             <input
@@ -324,26 +327,26 @@ export const UploadView: React.FC<UploadViewProps> = ({
               placeholder="e.g. Introduction to Algorithms (CLRS 4th Ed) or Raspberry Pi 4 Kit"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className={`w-full py-2.5 px-4 rounded-xl text-sm border outline-none transition-all ${
+              className={`w-full py-3 px-4 rounded-2xl text-base border outline-none transition-all ${
                 isDark 
-                  ? 'bg-slate-900 border-slate-700 focus:border-emerald-500 text-white' 
-                  : 'bg-white border-slate-200 focus:border-emerald-600 text-slate-900'
+                  ? 'bg-slate-900 border-slate-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-white placeholder:text-slate-500' 
+                  : 'bg-white border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15 text-slate-900 placeholder:text-slate-400'
               }`}
             />
           </div>
 
           {/* Category Selector */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 mb-2">
               Category
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as ItemCategory)}
-              className={`w-full py-2.5 px-4 rounded-xl text-sm border outline-none cursor-pointer ${
+              className={`w-full py-3 px-4 rounded-2xl text-base border outline-none cursor-pointer ${
                 isDark 
-                  ? 'bg-slate-900 border-slate-700 text-white' 
-                  : 'bg-white border-slate-200 text-slate-900'
+                  ? 'bg-slate-900 border-slate-700 text-white focus:border-emerald-500' 
+                  : 'bg-white border-slate-200 text-slate-900 focus:border-emerald-600'
               }`}
             >
               {CATEGORIES.filter((c) => c !== 'All Categories').map((cat) => (
@@ -356,36 +359,36 @@ export const UploadView: React.FC<UploadViewProps> = ({
 
           {/* Value Tier Selection */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-              Value Tier Classification
+            <label className="block text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 mb-2">
+              Value Tier Classification (APC Parity)
             </label>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { tier: 1 as ValueTier, name: 'Tier 1', range: 'Under $50', desc: 'Textbooks, cables, tools' },
-                { tier: 2 as ValueTier, name: 'Tier 2', range: '$50 - $150', desc: 'Keyboards, dev kits, parts' },
-                { tier: 3 as ValueTier, name: 'Tier 3', range: '$150+', desc: 'Laptops, GPUs, displays' },
+                { tier: 1 as ValueTier, name: 'Tier 1', range: '< ₱2,500', desc: 'Textbooks, dev boards, tools' },
+                { tier: 2 as ValueTier, name: 'Tier 2', range: '₱2.5k – ₱7.5k', desc: 'Keyboards, lab kits, parts' },
+                { tier: 3 as ValueTier, name: 'Tier 3', range: '₱7,500+', desc: 'Laptops, GPUs, displays' },
               ].map((t) => (
                 <div
                   key={t.tier}
                   onClick={() => setSelectedTier(t.tier)}
-                  className={`p-3 rounded-2xl border cursor-pointer transition-all ${
+                  className={`p-3.5 rounded-2xl border cursor-pointer transition-all ${
                     selectedTier === t.tier
                       ? isDark
-                        ? 'border-emerald-500 bg-emerald-500/10'
-                        : 'border-emerald-600 bg-emerald-50'
+                        ? 'border-emerald-500 bg-emerald-500/10 shadow-xs'
+                        : 'border-emerald-600 bg-emerald-50 shadow-xs'
                       : isDark
                       ? 'border-slate-800 bg-slate-900 hover:border-slate-700'
                       : 'border-slate-200 bg-white hover:bg-slate-50'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs">{t.name}</span>
+                    <span className="font-bold text-sm text-slate-900 dark:text-white">{t.name}</span>
                     {selectedTier === t.tier && (
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     )}
                   </div>
-                  <div className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1">{t.range}</div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">{t.desc}</div>
+                  <div className="text-xs font-bold text-emerald-700 dark:text-emerald-400 mt-1">{t.range}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">{t.desc}</div>
                 </div>
               ))}
             </div>
@@ -393,7 +396,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
 
           {/* Wanted Items */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 mb-2">
               What do you want in exchange? (Desired Trade Items) *
             </label>
             <input
@@ -402,17 +405,17 @@ export const UploadView: React.FC<UploadViewProps> = ({
               placeholder="e.g. Open to Linear Algebra book, Keychron keyboard, or Arduino sensor kit"
               value={wantedItems}
               onChange={(e) => setWantedItems(e.target.value)}
-              className={`w-full py-2.5 px-4 rounded-xl text-sm border outline-none transition-all ${
+              className={`w-full py-3 px-4 rounded-2xl text-base border outline-none transition-all ${
                 isDark 
-                  ? 'bg-slate-900 border-slate-700 focus:border-emerald-500 text-white' 
-                  : 'bg-white border-slate-200 focus:border-emerald-600 text-slate-900'
+                  ? 'bg-slate-900 border-slate-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-white placeholder:text-slate-500' 
+                  : 'bg-white border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15 text-slate-900 placeholder:text-slate-400'
               }`}
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+            <label className="block text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-400 mb-2">
               Description &amp; Condition Details
             </label>
             <textarea
@@ -420,10 +423,10 @@ export const UploadView: React.FC<UploadViewProps> = ({
               placeholder="Describe condition, edition, included accessories, and meetup preferences..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className={`w-full py-2.5 px-4 rounded-xl text-sm border outline-none transition-all resize-none ${
+              className={`w-full py-3 px-4 rounded-2xl text-base border outline-none transition-all resize-none ${
                 isDark 
-                  ? 'bg-slate-900 border-slate-700 focus:border-emerald-500 text-white' 
-                  : 'bg-white border-slate-200 focus:border-emerald-600 text-slate-900'
+                  ? 'bg-slate-900 border-slate-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-white placeholder:text-slate-500' 
+                  : 'bg-white border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15 text-slate-900 placeholder:text-slate-400'
               }`}
             />
           </div>
@@ -433,17 +436,17 @@ export const UploadView: React.FC<UploadViewProps> = ({
             <button
               type="submit"
               disabled={isSubmitting || !title.trim()}
-              className={`w-full py-3 px-6 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.99] ${
+              className={`w-full py-3.5 px-6 rounded-2xl font-bold text-base flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.99] ${
                 title.trim() && !isSubmitting
                   ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-500/20'
-                  : 'bg-slate-300 dark:bg-slate-800 text-slate-500 cursor-not-allowed'
+                  : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed'
               }`}
             >
               {isSubmitting ? (
                 <span>Publishing listing...</span>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4" />
+                  <Sparkles className="w-5 h-5" />
                   <span>Publish Barter Listing</span>
                 </>
               )}

@@ -28,9 +28,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     },
     {
       id: 'upload' as ActiveTab,
-      label: 'Upload',
+      label: 'Post Item',
       icon: PlusCircle,
-      isPillStyle: isDark,
       badge: null,
     },
     {
@@ -52,61 +51,41 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       id="bottom-navigation-bar"
       className={`fixed bottom-0 left-0 right-0 z-30 transition-colors duration-200 md:hidden ${
         isDark
-          ? 'bg-[#0B132B] border-t border-slate-800'
-          : 'bg-white/95 backdrop-blur-md border-t border-slate-100'
+          ? 'bg-[#0B132B]/95 backdrop-blur-md border-t border-slate-800 text-white'
+          : 'bg-white/95 backdrop-blur-md border-t border-slate-200 text-slate-900 shadow-lg'
       }`}
     >
-      <div className="max-w-md mx-auto px-4 h-16 flex items-center justify-around">
+      <div className="max-w-md mx-auto px-4 h-18 flex items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
-
-          // Special treatment for Upload tab in dark mode or active state
-          if (item.id === 'upload' && isDark) {
-            return (
-              <button
-                key={item.id}
-                id={`nav-tab-${item.id}`}
-                onClick={() => onChangeTab(item.id)}
-                className="flex flex-col items-center justify-center relative py-1 px-3 transition-transform active:scale-95"
-              >
-                <div className={`px-4 py-1 rounded-full flex flex-col items-center ${
-                  isActive ? 'bg-emerald-500 text-slate-950 font-semibold' : 'text-slate-400 hover:text-emerald-400'
-                }`}>
-                  <Icon className="w-5 h-5" />
-                  <span className="text-[11px] mt-0.5 tracking-tight">{item.label}</span>
-                </div>
-              </button>
-            );
-          }
 
           return (
             <button
               key={item.id}
               id={`nav-tab-${item.id}`}
               onClick={() => onChangeTab(item.id)}
-              className={`flex flex-col items-center justify-center relative py-1 px-3 min-w-[64px] transition-colors active:scale-95 ${
+              className={`flex flex-col items-center justify-center relative py-1 px-3 min-w-[68px] transition-all active:scale-95 ${
                 isActive
                   ? isDark
-                    ? 'text-emerald-400 font-medium'
-                    : 'text-emerald-700 font-semibold'
+                    ? 'text-emerald-400 font-bold'
+                    : 'text-emerald-700 font-extrabold'
                   : isDark
                   ? 'text-slate-400 hover:text-slate-200'
-                  : 'text-slate-500 hover:text-slate-800'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <div className="relative">
-                <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.3]' : 'stroke-[1.8]'}`} />
+                <Icon className={`w-6 h-6 ${isActive ? 'stroke-[2.5]' : 'stroke-[1.8]'}`} />
                 {item.badge !== null && (
-                  <span className="absolute -top-1 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-emerald-500 text-white text-[10px] font-bold flex items-center justify-center shadow-sm">
+                  <span className="absolute -top-1.5 -right-2 px-1.5 py-0.5 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs">
                     {item.badge}
                   </span>
                 )}
               </div>
-              <span className="text-[11px] mt-1 tracking-tight">{item.label}</span>
-              {isActive && (
-                <span className={`w-1 h-1 rounded-full mt-0.5 ${isDark ? 'bg-emerald-400' : 'bg-emerald-600'}`} />
-              )}
+              <span className={`text-xs mt-1 tracking-tight ${isActive ? 'font-bold' : 'font-medium'}`}>
+                {item.label}
+              </span>
             </button>
           );
         })}

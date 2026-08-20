@@ -29,8 +29,6 @@ interface DrawerProps {
   onOpenAuthModal: (mode?: 'login' | 'signup') => void;
   onLogout: () => void;
   onSelectAccount: (user: UserProfile) => void;
-  isCyberMode: boolean;
-  onToggleCyberMode: () => void;
   onSelectCategory: (cat: ItemCategory) => void;
   selectedCategory: ItemCategory;
 }
@@ -43,8 +41,6 @@ export const Drawer: React.FC<DrawerProps> = ({
   onOpenAuthModal,
   onLogout,
   onSelectAccount,
-  isCyberMode,
-  onToggleCyberMode,
   onSelectCategory,
   selectedCategory,
 }) => {
@@ -246,38 +242,6 @@ export const Drawer: React.FC<DrawerProps> = ({
             </div>
           </div>
 
-          {/* Marketplace Mode Switch */}
-          <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 px-1">
-              Marketplace Mode
-            </h4>
-            <button
-              onClick={() => {
-                onToggleCyberMode();
-                onClose();
-              }}
-              className={`w-full flex items-center justify-between p-3 rounded-xl border text-sm transition-colors ${
-                isCyberMode
-                  ? 'bg-emerald-950/30 border-emerald-500/50 text-emerald-300'
-                  : isDark
-                  ? 'bg-slate-900/60 border-slate-800 text-slate-300 hover:border-slate-700'
-                  : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-300'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Sparkles className={`w-4 h-4 ${isCyberMode ? 'text-emerald-400' : 'text-slate-400'}`} />
-                <span className="font-medium">
-                  {isCyberMode ? 'Cyber Asset Exchange' : 'Campus Barter Hub'}
-                </span>
-              </div>
-              <span className={`text-[11px] px-2 py-0.5 rounded-full ${
-                isCyberMode ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
-              }`}>
-                {isCyberMode ? 'Active' : 'Switch'}
-              </span>
-            </button>
-          </div>
-
           {/* Barter Value Tiers Guide */}
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 px-1">
@@ -291,17 +255,17 @@ export const Drawer: React.FC<DrawerProps> = ({
                   Tier 1
                 </span>
                 <div>
-                  <div className="font-semibold text-slate-900 dark:text-white">Small Items</div>
-                  <div className="text-[11px] text-slate-400">Books, stationery, plants, small tools.</div>
+                  <div className="font-semibold text-slate-900 dark:text-white">Small Items (&lt; ₱2,500)</div>
+                  <div className="text-[11px] text-slate-400">CS textbooks, USB dongles, dev boards, stationery.</div>
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-[10px]">
+                <span className="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-600 dark:text-sky-400 font-bold text-[10px]">
                   Tier 2
                 </span>
                 <div>
-                  <div className="font-semibold text-slate-900 dark:text-white">Medium Items</div>
-                  <div className="text-[11px] text-slate-400">Electronics, cameras, keyboards, audio gear.</div>
+                  <div className="font-semibold text-slate-900 dark:text-white">Medium Items (₱2,500 – ₱7,500)</div>
+                  <div className="text-[11px] text-slate-400">Custom keyboards, Raspberry Pi lab kits, headphones.</div>
                 </div>
               </div>
               <div className="flex items-start gap-2">
@@ -309,8 +273,8 @@ export const Drawer: React.FC<DrawerProps> = ({
                   Tier 3
                 </span>
                 <div>
-                  <div className="font-semibold text-slate-900 dark:text-white">High Value</div>
-                  <div className="text-[11px] text-slate-400">Laptops, premium tablets, electric scooters.</div>
+                  <div className="font-semibold text-slate-900 dark:text-white">High Value (₱7,500+)</div>
+                  <div className="text-[11px] text-slate-400">MacBooks, 4K developer monitors, RTX GPUs.</div>
                 </div>
               </div>
             </div>
@@ -319,7 +283,7 @@ export const Drawer: React.FC<DrawerProps> = ({
 
         {/* Footer */}
         <div className={`p-4 border-t text-center text-xs text-slate-400 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
-          Kalakalan Fair Barter Community &copy; 2026
+          Kalakalan — Asia Pacific College Barter Network &copy; 2026
         </div>
       </div>
     </div>

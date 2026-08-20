@@ -31,12 +31,12 @@ interface AuthModalProps {
 const PRESET_AVATARS = DRAWN_AVATAR_PRESETS.map((p) => p.url);
 
 const CAMPUS_LOCATIONS = [
-  'Campus Center',
-  'Science Quad',
-  'West Village Dorms',
-  'Engineering Hall',
-  'Library Commons',
-  'North Campus Residences',
+  '5th Flr Library & Media Hub',
+  '8th Flr SoCIT Mac Lab',
+  '7th Flr SoE Robotics Hub',
+  '6th Flr SoMA Design Studio',
+  '4th Flr Cafeteria & Ram Lounge',
+  '2nd Flr Quadrangle / Plaza',
 ];
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -104,15 +104,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     const loggedInUser: UserProfile = {
       id: `user-${Date.now()}`,
-      name: formattedName || 'Campus Trader',
+      name: formattedName || 'APC Student',
       email: loginEmail.trim(),
       avatar: PRESET_AVATARS[Math.floor(Math.random() * PRESET_AVATARS.length)],
-      initials: (formattedName.slice(0, 2) || 'CT').toUpperCase(),
+      initials: (formattedName.slice(0, 2) || 'AS').toUpperCase(),
       trustScore: 'Verified Trader',
       rating: 5.0,
       completedTrades: 1,
-      location: 'Campus Center',
-      studentId: `STU-${Math.floor(1000 + Math.random() * 9000)}`,
+      location: '5th Flr Library & Media Hub',
+      studentId: `APC-2024-${Math.floor(1000 + Math.random() * 9000)}`,
       joinedDate: 'Today',
     };
 
@@ -158,12 +158,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       name: signupName.trim(),
       email: signupEmail.trim(),
       avatar: signupAvatar,
-      initials: nameInitials || 'CT',
+      initials: nameInitials || 'AP',
       trustScore: isStudentVerified ? 'Verified Trader' : 'Rising Trader',
       rating: 5.0,
       completedTrades: 0,
       location: signupLocation,
-      studentId: `STU-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      studentId: `APC-2026-${Math.floor(1000 + Math.random() * 9000)}`,
       joinedDate: 'Joined recently',
     };
 
@@ -212,17 +212,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Brand Header */}
         <div className="text-center mb-5">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-500 ring-4 ring-emerald-500/10 mb-2.5">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 ring-4 ring-emerald-500/10 mb-2.5">
             {mode === 'signup' ? <UserPlus className="w-6 h-6" /> : <LogIn className="w-6 h-6" />}
           </div>
-          <h2 className="text-xl font-bold tracking-tight">
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
             {mode === 'login' && 'Sign in to Kalakalan'}
-            {mode === 'signup' && 'Create Barter Account'}
+            {mode === 'signup' && 'Create APC Barter Account'}
             {mode === 'forgot' && 'Reset Password'}
           </h2>
-          <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+          <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             {mode === 'login' && 'Access your active trades, listings, and campus matches.'}
-            {mode === 'signup' && 'Join the peer-to-peer campus exchange network.'}
+            {mode === 'signup' && 'Join the peer-to-peer Asia Pacific College exchange network.'}
             {mode === 'forgot' && 'Enter your email to receive recovery instructions.'}
           </p>
         </div>
@@ -242,7 +242,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               className={`py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                 mode === 'login'
                   ? isDark 
-                    ? 'bg-emerald-800 text-white shadow-xs' 
+                    ? 'bg-emerald-500 text-slate-950 shadow-xs' 
                     : 'bg-white text-emerald-900 shadow-xs'
                   : isDark 
                     ? 'text-slate-400 hover:text-slate-200' 
@@ -262,7 +262,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               className={`py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                 mode === 'signup'
                   ? isDark 
-                    ? 'bg-emerald-800 text-white shadow-xs' 
+                    ? 'bg-emerald-500 text-slate-950 shadow-xs' 
                     : 'bg-white text-emerald-900 shadow-xs'
                   : isDark 
                     ? 'text-slate-400 hover:text-slate-200' 
@@ -277,7 +277,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Error Alert */}
         {errorMsg && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-500 text-xs font-medium">
+          <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-medium">
             {errorMsg}
           </div>
         )}
@@ -288,7 +288,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {/* Email Field */}
             <div>
               <label className={`block text-xs font-bold mb-1.5 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                Email or Campus ID
+                Email or APC Student ID
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -296,13 +296,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   id="input-login-email"
                   type="text"
                   required
-                  placeholder="e.g. tristan.gab18@gmail.com or alex.l@campus.edu"
+                  placeholder="e.g. tristan.g@apc.edu.ph or alex.l@apc.edu.ph"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl text-xs border outline-none transition-all ${
                     isDark 
-                      ? 'bg-slate-900 border-slate-700 focus:border-emerald-500 text-white placeholder:text-slate-500' 
-                      : 'bg-slate-50 border-slate-200 focus:border-emerald-600 text-slate-900 placeholder:text-slate-400'
+                      ? 'bg-slate-900 border-slate-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-white placeholder:text-slate-500' 
+                      : 'bg-slate-50 border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15 text-slate-900 placeholder:text-slate-400'
                   }`}
                 />
               </div>
@@ -317,7 +317,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setMode('forgot')}
-                  className="text-[11px] text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
+                  className="text-[11px] text-emerald-700 dark:text-emerald-400 hover:underline font-bold"
                 >
                   Forgot password?
                 </button>
@@ -333,14 +333,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   onChange={(e) => setLoginPassword(e.target.value)}
                   className={`w-full pl-10 pr-10 py-2.5 rounded-xl text-xs border outline-none transition-all ${
                     isDark 
-                      ? 'bg-slate-900 border-slate-700 focus:border-emerald-500 text-white placeholder:text-slate-500' 
-                      : 'bg-slate-50 border-slate-200 focus:border-emerald-600 text-slate-900 placeholder:text-slate-400'
+                      ? 'bg-slate-900 border-slate-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-white placeholder:text-slate-500' 
+                      : 'bg-slate-50 border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15 text-slate-900 placeholder:text-slate-400'
                   }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -356,7 +356,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4"
                 />
-                <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Remember this device</span>
+                <span className={isDark ? 'text-slate-400' : 'text-slate-600 font-medium'}>Remember this device</span>
               </label>
             </div>
 
@@ -364,7 +364,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <button
               id="btn-submit-login"
               type="submit"
-              className="w-full py-3 rounded-xl font-bold text-sm bg-emerald-800 hover:bg-emerald-900 active:scale-[0.99] text-white shadow-md transition-all flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white shadow-md transition-all flex items-center justify-center gap-2"
             >
               <LogIn className="w-4 h-4" />
               Sign In to Account
@@ -390,10 +390,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       isDark ? 'bg-slate-900/60 border-slate-800 hover:bg-slate-800' : 'bg-slate-50 border-slate-200 hover:bg-white'
                     }`}
                   >
-                    <img src={acc.avatar} alt={acc.name} className="w-7 h-7 rounded-full object-cover shrink-0" />
+                    <img src={acc.avatar} alt={acc.name} className="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-emerald-500/20" />
                     <div className="min-w-0">
-                      <div className="text-[11px] font-bold truncate leading-tight">{acc.name}</div>
-                      <div className="text-[9px] text-emerald-600 dark:text-emerald-400 truncate">{acc.trustScore}</div>
+                      <div className="text-[11px] font-bold truncate leading-tight text-slate-900 dark:text-white">{acc.name}</div>
+                      <div className="text-[9px] text-emerald-700 dark:text-emerald-400 font-bold truncate">{acc.trustScore}</div>
                     </div>
                   </button>
                 ))}
@@ -408,8 +408,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {/* Avatar Selector */}
             <div>
               <label className={`block text-xs font-bold mb-1.5 flex items-center justify-between ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                <span>Choose Illustrated Avatar (Drawing)</span>
-                <span className="text-[10px] text-emerald-500 font-normal">Hand-drawn character</span>
+                <span>Choose Illustrated Avatar</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Hand-drawn character</span>
               </label>
               <div className="flex items-center gap-2.5 overflow-x-auto py-1.5 px-0.5 no-scrollbar">
                 {DRAWN_AVATAR_PRESETS.map((preset) => (
@@ -459,7 +459,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {/* Email Field */}
             <div>
               <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                Campus or Personal Email
+                APC or Personal Email
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -467,7 +467,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   id="input-signup-email"
                   type="email"
                   required
-                  placeholder="student@campus.edu"
+                  placeholder="student@apc.edu.ph"
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
                   className={`w-full pl-10 pr-3.5 py-2 rounded-xl text-xs border outline-none transition-all ${
@@ -482,7 +482,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {/* Campus Primary Zone */}
             <div>
               <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                Primary Campus Handover Spot
+                Primary APC Handover Spot
               </label>
               <div className="relative">
                 <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -555,7 +555,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   className="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5"
                 />
                 <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                  Claim <strong className="text-emerald-500">Verified Trader</strong> status (valid student email)
+                  Claim <strong className="text-emerald-700 dark:text-emerald-400">Verified APC Trader</strong> status
                 </span>
               </label>
               <label className="flex items-start gap-2 cursor-pointer">
@@ -575,7 +575,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <button
               id="btn-submit-signup"
               type="submit"
-              className="w-full py-3 rounded-xl font-bold text-sm bg-emerald-800 hover:bg-emerald-900 active:scale-[0.99] text-white shadow-md transition-all flex items-center justify-center gap-2 mt-2"
+              className="w-full py-3 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white shadow-md transition-all flex items-center justify-center gap-2 mt-2"
             >
               <UserPlus className="w-4 h-4" />
               Create Barter Account
@@ -592,7 +592,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               }`}>
                 <CheckCircle2 className="w-8 h-8 mx-auto text-emerald-500" />
                 <h4 className="font-bold text-sm">Recovery Link Dispatched</h4>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   We have dispatched password reset instructions to <strong>{resetEmail}</strong>.
                 </p>
                 <button
@@ -601,7 +601,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     setMode('login');
                     setResetSent(false);
                   }}
-                  className="mt-3 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-800 text-white hover:bg-emerald-900"
+                  className="mt-3 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-500"
                 >
                   Return to Log In
                 </button>
@@ -618,7 +618,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       id="input-forgot-email"
                       type="email"
                       required
-                      placeholder="student@campus.edu"
+                      placeholder="student@apc.edu.ph"
                       value={resetEmail}
                       onChange={(e) => setResetEmail(e.target.value)}
                       className={`w-full pl-10 pr-3.5 py-2.5 rounded-xl text-xs border outline-none transition-all ${
@@ -633,7 +633,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <button
                   id="btn-submit-forgot"
                   type="submit"
-                  className="w-full py-3 rounded-xl font-bold text-sm bg-emerald-800 hover:bg-emerald-900 active:scale-[0.99] text-white shadow-md transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white shadow-md transition-all flex items-center justify-center gap-2"
                 >
                   <KeyRound className="w-4 h-4" />
                   Send Reset Link
@@ -643,7 +643,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setMode('login')}
-                    className="text-xs text-slate-400 hover:text-emerald-500 font-semibold"
+                    className="text-xs text-slate-500 dark:text-slate-400 hover:text-emerald-600 font-semibold"
                   >
                     Back to Sign In
                   </button>

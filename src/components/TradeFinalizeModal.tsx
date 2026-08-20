@@ -46,7 +46,9 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-full text-slate-400 hover:text-slate-200 transition-colors"
+          className={`absolute top-4 right-4 p-1.5 rounded-full transition-colors ${
+            isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+          }`}
         >
           <X className="w-5 h-5" />
         </button>
@@ -54,22 +56,22 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
         {step === 'review' ? (
           <div className="space-y-5">
             <div>
-              <div className="flex items-center gap-2 text-emerald-500 mb-1">
+              <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 mb-1">
                 <ShieldCheck className="w-5 h-5" />
                 <span className="text-xs font-bold uppercase tracking-wider">
                   Secure Barter Finalization
                 </span>
               </div>
-              <h2 className="text-xl font-bold tracking-tight">
+              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                 Finalize Trade Agreement
               </h2>
-              <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                 Both traders confirm the exchange of items at fair tier equivalence.
               </p>
             </div>
 
             {/* Visual Exchange comparison */}
-            <div className={`p-4 rounded-xl border flex items-center justify-between gap-3 ${
+            <div className={`p-4 rounded-2xl border flex items-center justify-between gap-3 ${
               isDark ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-50 border-slate-200'
             }`}>
               {/* My item */}
@@ -77,11 +79,11 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
                 <div className="w-16 h-16 rounded-xl overflow-hidden mx-auto mb-1.5 bg-slate-800 border border-slate-700">
                   <img src={match.myOffering.imageUrl} alt={match.myOffering.title} className="w-full h-full object-cover" />
                 </div>
-                <div className="text-xs font-bold truncate">{match.myOffering.title}</div>
-                <div className="text-[10px] text-emerald-500 font-bold">Tier {match.myOffering.tier}</div>
+                <div className="text-xs font-bold truncate text-slate-900 dark:text-white">{match.myOffering.title}</div>
+                <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">Tier {match.myOffering.tier}</div>
               </div>
 
-              <div className="p-2 rounded-full bg-emerald-500/20 text-emerald-400">
+              <div className="p-2 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
                 <ArrowRightLeft className="w-5 h-5" />
               </div>
 
@@ -90,27 +92,27 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
                 <div className="w-16 h-16 rounded-xl overflow-hidden mx-auto mb-1.5 bg-slate-800 border border-slate-700">
                   <img src={match.theirOffering.imageUrl} alt={match.theirOffering.title} className="w-full h-full object-cover" />
                 </div>
-                <div className="text-xs font-bold truncate">{match.theirOffering.title}</div>
-                <div className="text-[10px] text-emerald-500 font-bold">Tier {match.theirOffering.tier}</div>
+                <div className="text-xs font-bold truncate text-slate-900 dark:text-white">{match.theirOffering.title}</div>
+                <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">Tier {match.theirOffering.tier}</div>
               </div>
             </div>
 
             {/* Meetup summary */}
-            <div className={`p-3 rounded-xl border text-xs space-y-1.5 ${
+            <div className={`p-3.5 rounded-2xl border text-xs space-y-1.5 ${
               isDark ? 'bg-slate-900/50 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
             }`}>
-              <div className="flex items-center gap-1.5 font-semibold text-slate-900 dark:text-white">
-                <MapPin className="w-4 h-4 text-emerald-500" />
+              <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
+                <MapPin className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                 Agreed Meetup: Student Union Campus Center (2:00 PM)
               </div>
-              <div className="text-[11px] text-slate-400 pl-5.5">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 pl-5.5 font-medium">
                 Trader: {match.partner.name} • {match.partner.trustScore}
               </div>
             </div>
 
             {/* Safety checklist */}
             <div className="space-y-2 text-xs">
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-2 cursor-pointer font-medium text-slate-800 dark:text-slate-200">
                 <input
                   type="checkbox"
                   checked={checkedChecks.condition}
@@ -119,7 +121,7 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
                 />
                 <span>I have verified the condition and details of the traded item.</span>
               </label>
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-2 cursor-pointer font-medium text-slate-800 dark:text-slate-200">
                 <input
                   type="checkbox"
                   checked={checkedChecks.location}
@@ -136,8 +138,8 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
               disabled={!checkedChecks.condition || !checkedChecks.location}
               className={`w-full py-3.5 px-4 rounded-xl font-bold text-sm transition-all shadow-md flex items-center justify-center gap-2 ${
                 checkedChecks.condition && checkedChecks.location
-                  ? 'bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-slate-950'
-                  : 'opacity-50 cursor-not-allowed bg-slate-700 text-slate-400'
+                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white active:scale-[0.99]'
+                  : 'opacity-50 cursor-not-allowed bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500'
               }`}
             >
               <CheckCircle2 className="w-5 h-5" />
@@ -147,12 +149,12 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
         ) : (
           /* Success Screen */
           <div className="text-center space-y-4 py-2">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto ring-4 ring-emerald-500/30 animate-bounce">
+            <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto ring-4 ring-emerald-500/30 animate-bounce">
               <Sparkles className="w-8 h-8" />
             </div>
 
             <div>
-              <h3 className="text-xl font-bold">Barter Finalized!</h3>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Barter Finalized!</h3>
               <p className={`text-xs mt-1 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                 You and {match.partner.name} have successfully confirmed this trade.
               </p>
@@ -162,18 +164,18 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
             <div className={`p-4 rounded-2xl border flex flex-col items-center justify-center ${
               isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
             }`}>
-              <QrCode className="w-24 h-24 text-emerald-500 mb-2" />
-              <div className="text-xs font-mono font-bold tracking-widest text-slate-400">
+              <QrCode className="w-24 h-24 text-emerald-600 dark:text-emerald-400 mb-2" />
+              <div className="text-xs font-mono font-bold tracking-widest text-slate-700 dark:text-slate-300">
                 TRADE ID: #KK-{match.id.toUpperCase()}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-medium">
                 Show this QR at the campus handover point.
               </div>
             </div>
 
             {/* Rate trader */}
             <div>
-              <div className="text-xs font-semibold mb-1.5 text-slate-400">
+              <div className="text-xs font-bold mb-1.5 text-slate-700 dark:text-slate-300">
                 Rate your trading experience with {match.partner.name}
               </div>
               <div className="flex justify-center gap-1">
@@ -183,7 +185,7 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
                     onClick={() => setRating(star)}
                     className="p-1 text-amber-400 hover:scale-110 transition-transform"
                   >
-                    <Star className={`w-6 h-6 ${star <= rating ? 'fill-amber-400' : 'text-slate-600'}`} />
+                    <Star className={`w-6 h-6 ${star <= rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300 dark:text-slate-700'}`} />
                   </button>
                 ))}
               </div>
@@ -191,7 +193,7 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
 
             <button
               onClick={onClose}
-              className="w-full py-3 rounded-xl font-bold text-sm bg-emerald-500 text-slate-950 hover:bg-emerald-400 transition-colors shadow-md"
+              className="w-full py-3 rounded-xl font-bold text-sm bg-emerald-600 text-white hover:bg-emerald-500 transition-colors shadow-md"
             >
               Done & Return to Market
             </button>

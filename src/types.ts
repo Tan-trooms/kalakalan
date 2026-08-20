@@ -40,8 +40,6 @@ export interface BarterItem {
   wantedItems: string;
   createdAt: string;
   isLiked?: boolean;
-  isCyberAsset?: boolean;
-  creditPrice?: string;
 }
 
 export interface TradeMatch {
