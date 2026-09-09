@@ -16,7 +16,8 @@ import {
   LogOut,
   Users,
   Mail,
-  CreditCard
+  CreditCard,
+  Star
 } from 'lucide-react';
 import { DEMO_ACCOUNTS } from '../data/mockData';
 import { ThemeMode, ItemCategory, UserProfile } from '../types';
@@ -94,9 +95,12 @@ export const Drawer: React.FC<DrawerProps> = ({
                   <h3 className="text-sm font-bold truncate">{currentUser.name}</h3>
                   <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
                 </div>
-                <div className="flex items-center gap-1 text-xs text-emerald-600 font-medium mt-0.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-                  {currentUser.trustScore}
+                <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-700 dark:text-amber-400 font-extrabold text-[11px] border border-amber-500/30 shadow-2xs">
+                    <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                    <span>{currentUser.rating ? currentUser.rating.toFixed(1) : '5.0'} Overall Rating</span>
+                  </span>
+                  <span className="text-xs text-emerald-700 dark:text-emerald-400 font-bold">• {currentUser.trustScore}</span>
                 </div>
                 {currentUser.email && (
                   <div className="text-[11px] text-slate-400 truncate mt-0.5">
@@ -112,13 +116,16 @@ export const Drawer: React.FC<DrawerProps> = ({
 
             {/* Quick Stats */}
             <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-slate-200/40 dark:border-slate-800 text-center">
-              <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-800/60' : 'bg-white'} border border-slate-200/30 dark:border-slate-800`}>
-                <div className="text-xs text-slate-400">Completed Trades</div>
-                <div className="text-base font-bold text-emerald-500">{currentUser.completedTrades}</div>
+              <div className={`p-2.5 rounded-xl ${isDark ? 'bg-slate-800/60' : 'bg-white'} border border-slate-200/30 dark:border-slate-800 shadow-2xs`}>
+                <div className="text-[11px] text-slate-400 font-medium">Completed Barters</div>
+                <div className="text-base font-extrabold text-emerald-500 mt-0.5">{currentUser.completedTrades}</div>
               </div>
-              <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-800/60' : 'bg-white'} border border-slate-200/30 dark:border-slate-800`}>
-                <div className="text-xs text-slate-400">Trader Rating</div>
-                <div className="text-base font-bold text-amber-500">★ {currentUser.rating}</div>
+              <div className={`p-2.5 rounded-xl ${isDark ? 'bg-slate-800/60' : 'bg-white'} border border-slate-200/30 dark:border-slate-800 shadow-2xs`}>
+                <div className="text-[11px] text-slate-400 font-medium">Trade Rating</div>
+                <div className="text-base font-extrabold text-amber-500 flex items-center justify-center gap-1 mt-0.5">
+                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+                  <span>{currentUser.rating ? currentUser.rating.toFixed(1) : '5.0'}</span>
+                </div>
               </div>
             </div>
 
@@ -233,8 +240,9 @@ export const Drawer: React.FC<DrawerProps> = ({
                         <div className="text-[10px] text-slate-400 truncate">{acc.location}</div>
                       </div>
                     </div>
-                    <span className="text-[10px] font-semibold text-emerald-500 shrink-0">
-                      ★ {acc.rating}
+                    <span className="text-[10px] font-bold text-amber-500 shrink-0 flex items-center gap-0.5">
+                      <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-500" />
+                      <span>{acc.rating ? acc.rating.toFixed(1) : '5.0'}</span>
                     </span>
                   </button>
                 );
@@ -242,39 +250,48 @@ export const Drawer: React.FC<DrawerProps> = ({
             </div>
           </div>
 
-          {/* Barter Value Tiers Guide */}
+          {/* Item Condition Classification Guide */}
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 px-1">
-              Barter Tier Guide
+              Condition Grading Guide
             </h4>
             <div className={`p-3 rounded-xl border space-y-2.5 text-xs ${
               isDark ? 'bg-slate-900/60 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
             }`}>
               <div className="flex items-start gap-2">
-                <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[10px]">
-                  Tier 1
+                <span className="px-2 py-0.5 rounded-md bg-emerald-600 text-white font-bold text-[10px] shrink-0 shadow-xs">
+                  New
                 </span>
                 <div>
-                  <div className="font-semibold text-slate-900 dark:text-white">Small Items (&lt; ₱2,500)</div>
-                  <div className="text-[11px] text-slate-400">CS textbooks, USB dongles, dev boards, stationery.</div>
+                  <div className="font-semibold text-slate-900 dark:text-white">Brand New / Unused</div>
+                  <div className="text-[11px] text-slate-400">Factory sealed, unopened, or never used with complete accessories.</div>
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <span className="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-600 dark:text-sky-400 font-bold text-[10px]">
-                  Tier 2
+                <span className="px-2 py-0.5 rounded-md bg-sky-600 text-white font-bold text-[10px] shrink-0 shadow-xs">
+                  Like New
                 </span>
                 <div>
-                  <div className="font-semibold text-slate-900 dark:text-white">Medium Items (₱2,500 – ₱7,500)</div>
-                  <div className="text-[11px] text-slate-400">Custom keyboards, Raspberry Pi lab kits, headphones.</div>
+                  <div className="font-semibold text-slate-900 dark:text-white">Mint / Flawless</div>
+                  <div className="text-[11px] text-slate-400">Barely touched, no visible scratches or marks, 100% functional.</div>
                 </div>
               </div>
               <div className="flex items-start gap-2">
-                <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-bold text-[10px]">
-                  Tier 3
+                <span className="px-2 py-0.5 rounded-md bg-amber-600 text-white font-bold text-[10px] shrink-0 shadow-xs">
+                  2nd Hand
                 </span>
                 <div>
-                  <div className="font-semibold text-slate-900 dark:text-white">High Value (₱7,500+)</div>
-                  <div className="text-[11px] text-slate-400">MacBooks, 4K developer monitors, RTX GPUs.</div>
+                  <div className="font-semibold text-slate-900 dark:text-white">Gently Used (Good)</div>
+                  <div className="text-[11px] text-slate-400">Normal cosmetic wear from regular campus use, fully operational.</div>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="px-2 py-0.5 rounded-md bg-purple-600 text-white font-bold text-[10px] shrink-0 shadow-xs">
+                  Heavily Used
+                </span>
+                <div>
+                  <div className="font-semibold text-slate-900 dark:text-white">Heavily Used / Fair</div>
+                  <div className="text-[11px] text-slate-400">Noticeable blemishes or wear, working order or for components.</div>
                 </div>
               </div>
             </div>

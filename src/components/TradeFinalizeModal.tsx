@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { X, CheckCircle2, ArrowRightLeft, ShieldCheck, MapPin, QrCode, Star, Sparkles } from 'lucide-react';
-import { TradeMatch, ThemeMode } from '../types';
+import { TradeMatch, ThemeMode, UserProfile } from '../types';
+import { TradeReceiptModal, TradeReceiptData } from './TradeReceiptModal';
 
 interface TradeFinalizeModalProps {
   match: TradeMatch | null;
   isOpen: boolean;
   onClose: () => void;
   theme: ThemeMode;
+  currentUser?: UserProfile | null;
   onConfirmFinalize: (matchId: string) => void;
 }
 
@@ -15,6 +17,7 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
   isOpen,
   onClose,
   theme,
+  currentUser,
   onConfirmFinalize,
 }) => {
   if (!isOpen || !match) return null;
@@ -33,6 +36,54 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
     setStep('success');
     onConfirmFinalize(match.id);
   };
+
+  const dynamicReceiptData: TradeReceiptData = {
+    transaction: {
+      id: `#KLK-${match.id.replace('match-', '').toUpperCase()}-APC`,
+      timestamp: 'September 9, 2026 | 3:38 PM',
+      status: 'VERIFIED & COMPLETED',
+    },
+    currentUser: {
+      name: currentUser?.name || 'Tristan G.',
+      avatar: currentUser?.avatar,
+      item: {
+        name: match.myOffering.title,
+        condition: match.myOffering.condition || '2nd Hand',
+        usageDuration: match.myOffering.usageDuration || '1 Year',
+        image: match.myOffering.images?.[0] || match.myOffering.imageUrl,
+      },
+      tradeStreak: (currentUser?.completedTrades || 0) > 0 ? currentUser?.completedTrades : 3,
+    },
+    partner: {
+      name: match.partner.name,
+      avatar: match.partner.avatar,
+      item: {
+        name: match.theirOffering.title,
+        condition: match.theirOffering.condition || '2nd Hand',
+        usageDuration: match.theirOffering.usageDuration || '6 Months',
+        image: match.theirOffering.images?.[0] || match.theirOffering.imageUrl,
+      },
+    },
+    meetup: {
+      location: 'Asia Pacific College - Cafeteria',
+      time: '2:00 PM',
+      confirmedNote: 'Both parties clicked "Finalize Trade"',
+    },
+  };
+
+  if (step === 'success') {
+    return (
+      <TradeReceiptModal
+        isOpen={isOpen}
+        onClose={() => {
+          setStep('review');
+          onClose();
+        }}
+        theme={theme}
+        receiptData={dynamicReceiptData}
+      />
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
@@ -77,10 +128,10 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
               {/* My item */}
               <div className="flex-1 text-center">
                 <div className="w-16 h-16 rounded-xl overflow-hidden mx-auto mb-1.5 bg-slate-800 border border-slate-700">
-                  <img src={match.myOffering.imageUrl} alt={match.myOffering.title} className="w-full h-full object-cover" />
+                  <img src={match.myOffering.images?.[0] || match.myOffering.imageUrl} alt={match.myOffering.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="text-xs font-bold truncate text-slate-900 dark:text-white">{match.myOffering.title}</div>
-                <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">Tier {match.myOffering.tier}</div>
+                <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">{match.myOffering.condition || 'Like New'}</div>
               </div>
 
               <div className="p-2 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
@@ -90,10 +141,10 @@ export const TradeFinalizeModal: React.FC<TradeFinalizeModalProps> = ({
               {/* Their item */}
               <div className="flex-1 text-center">
                 <div className="w-16 h-16 rounded-xl overflow-hidden mx-auto mb-1.5 bg-slate-800 border border-slate-700">
-                  <img src={match.theirOffering.imageUrl} alt={match.theirOffering.title} className="w-full h-full object-cover" />
+                  <img src={match.theirOffering.images?.[0] || match.theirOffering.imageUrl} alt={match.theirOffering.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="text-xs font-bold truncate text-slate-900 dark:text-white">{match.theirOffering.title}</div>
-                <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">Tier {match.theirOffering.tier}</div>
+                <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">{match.theirOffering.condition || 'Like New'}</div>
               </div>
             </div>
 

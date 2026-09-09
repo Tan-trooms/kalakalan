@@ -566,7 +566,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   className="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5"
                 />
                 <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>
-                  I agree to fair tier valuation & safe campus handover guidelines.
+                  I agree to fair condition evaluation & safe campus handover guidelines.
                 </span>
               </label>
             </div>

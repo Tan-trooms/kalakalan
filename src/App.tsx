@@ -6,7 +6,7 @@ import {
   TradeMatch, 
   ChatMessage, 
   ItemCategory,
-  ValueTier,
+  ItemCondition,
   UserProfile,
   AuthMode
 } from './types';
@@ -17,7 +17,7 @@ import {
   CURRENT_USER, 
   DEMO_ACCOUNTS 
 } from './data/mockData';
-import { sanitizeToDrawingAvatar, DRAWING_AVATARS } from './data/avatars';
+import { sanitizeToDrawingAvatar } from './data/avatars';
 import { Header } from './components/Header';
 import { BottomNav } from './components/BottomNav';
 import { Drawer } from './components/Drawer';
@@ -28,7 +28,7 @@ import { ChatView } from './components/ChatView';
 import { ItemDetailModal } from './components/ItemDetailModal';
 import { TradeFinalizeModal } from './components/TradeFinalizeModal';
 import { AuthModal } from './components/AuthModal';
-import { CheckCircle2, ShieldCheck } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('market');
@@ -54,9 +54,36 @@ export default function App() {
   const [authModalMode, setAuthModalMode] = useState<AuthMode>('login');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Items State with backward compatibility migration from v2 or fresh initialization
   const [items, setItems] = useState<BarterItem[]>(() => {
-    const saved = localStorage.getItem('kalakalan_items_v2');
-    if (!saved) return INITIAL_ITEMS;
+    const saved = localStorage.getItem('kalakalan_items_v3');
+    if (!saved) {
+      const legacy = localStorage.getItem('kalakalan_items_v2');
+      if (!legacy) return INITIAL_ITEMS;
+      try {
+        const parsedLegacy = JSON.parse(legacy);
+        const initialMap = new Map(INITIAL_ITEMS.map((it) => [it.id, it]));
+        return parsedLegacy.map((item: any) => {
+          const defaultItem = initialMap.get(item.id);
+          const images = defaultItem?.images || (item.images && item.images.length > 0 ? item.images : [item.imageUrl || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80']);
+          const condition: ItemCondition = defaultItem?.condition || item.condition || (item.tier === 1 ? 'New' : item.tier === 2 ? 'Like New' : '2nd Hand');
+          const usageDuration = defaultItem?.usageDuration || item.usageDuration || '6 months';
+          return {
+            ...item,
+            images,
+            imageUrl: images[0],
+            condition,
+            usageDuration,
+            owner: {
+              ...item.owner,
+              avatar: sanitizeToDrawingAvatar(item.owner?.avatar || item.owner?.name),
+            },
+          };
+        });
+      } catch {
+        return INITIAL_ITEMS;
+      }
+    }
     try {
       const parsed: BarterItem[] = JSON.parse(saved);
       const initialItemMap = new Map(INITIAL_ITEMS.map((it) => [it.id, it]));
@@ -67,9 +94,15 @@ export default function App() {
       });
       return combined.map((item) => {
         const defaultItem = initialItemMap.get(item.id);
+        const images = (item.images && item.images.length > 0) ? item.images : (defaultItem?.images || [item.imageUrl || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80']);
+        const condition: ItemCondition = item.condition || defaultItem?.condition || 'Like New';
+        const usageDuration = item.usageDuration || defaultItem?.usageDuration || '3 months';
         return {
           ...item,
-          imageUrl: defaultItem ? defaultItem.imageUrl : item.imageUrl,
+          images,
+          imageUrl: images[0] || item.imageUrl,
+          condition,
+          usageDuration,
           owner: {
             ...item.owner,
             avatar: sanitizeToDrawingAvatar(item.owner?.avatar || item.owner?.name),
@@ -82,7 +115,7 @@ export default function App() {
   });
 
   const [matches, setMatches] = useState<TradeMatch[]>(() => {
-    const saved = localStorage.getItem('kalakalan_matches_v2');
+    const saved = localStorage.getItem('kalakalan_matches_v3');
     if (!saved) return INITIAL_MATCHES;
     try {
       const parsed: TradeMatch[] = JSON.parse(saved);
@@ -96,11 +129,15 @@ export default function App() {
         const defaultMatch = initialMatchMap.get(m.id);
         return {
           ...m,
+          createdAt: m.createdAt || defaultMatch?.createdAt || new Date().toISOString(),
+          isArchived: m.isArchived ?? defaultMatch?.isArchived ?? false,
           myOffering: defaultMatch ? defaultMatch.myOffering : m.myOffering,
           theirOffering: defaultMatch ? defaultMatch.theirOffering : m.theirOffering,
           partner: {
             ...m.partner,
             avatar: sanitizeToDrawingAvatar(m.partner?.avatar || m.partner?.name),
+            isOnline: m.partner?.isOnline ?? defaultMatch?.partner.isOnline ?? true,
+            lastActive: m.partner?.lastActive ?? defaultMatch?.partner.lastActive ?? 'Just now',
           },
         };
       });
@@ -110,7 +147,7 @@ export default function App() {
   });
 
   const [messages, setMessages] = useState<Record<string, ChatMessage[]>>(() => {
-    const saved = localStorage.getItem('kalakalan_messages_v2');
+    const saved = localStorage.getItem('kalakalan_messages_v3');
     if (!saved) return INITIAL_MESSAGES;
     try {
       const parsed: Record<string, ChatMessage[]> = JSON.parse(saved);
@@ -118,6 +155,8 @@ export default function App() {
       Object.entries(sanitized).forEach(([key, msgs]) => {
         sanitized[key] = msgs.map((msg) => ({
           ...msg,
+          createdAt: msg.createdAt || new Date().toISOString(),
+          isEdited: msg.isEdited ?? false,
           senderAvatar: msg.senderAvatar
             ? sanitizeToDrawingAvatar(msg.senderAvatar || msg.senderName)
             : undefined,
@@ -132,6 +171,9 @@ export default function App() {
   const [activeMatchId, setActiveMatchId] = useState<string>('match-1');
   const [selectedItemForDetail, setSelectedItemForDetail] = useState<BarterItem | null>(null);
   const [finalizeMatch, setFinalizeMatch] = useState<TradeMatch | null>(null);
+
+  // CRUD Editing Item State
+  const [editingItem, setEditingItem] = useState<BarterItem | null>(null);
 
   // Sync theme with document class & localStorage
   useEffect(() => {
@@ -154,16 +196,16 @@ export default function App() {
 
   // Sync items with localStorage
   useEffect(() => {
-    localStorage.setItem('kalakalan_items_v2', JSON.stringify(items));
+    localStorage.setItem('kalakalan_items_v3', JSON.stringify(items));
   }, [items]);
 
   // Sync matches & messages
   useEffect(() => {
-    localStorage.setItem('kalakalan_matches_v2', JSON.stringify(matches));
+    localStorage.setItem('kalakalan_matches_v3', JSON.stringify(matches));
   }, [matches]);
 
   useEffect(() => {
-    localStorage.setItem('kalakalan_messages_v2', JSON.stringify(messages));
+    localStorage.setItem('kalakalan_messages_v3', JSON.stringify(messages));
   }, [messages]);
 
   const showToast = (msg: string) => {
@@ -198,40 +240,89 @@ export default function App() {
   };
 
   const handleToggleLike = (itemId: string) => {
-    const updater = (list: BarterItem[]) =>
+    setItems((list) =>
       list.map((item) =>
         item.id === itemId ? { ...item, isLiked: !item.isLiked } : item
-      );
-    setItems(updater);
+      )
+    );
   };
 
+  // CRUD: CREATE
   const handlePostSuccess = (newItem: BarterItem) => {
     setItems((prev) => [newItem, ...prev]);
     setActiveTab('market');
     showToast(`Listing "${newItem.title}" published!`);
   };
 
+  // CRUD: INITIATE EDIT
+  const handleStartEditItem = (item: BarterItem) => {
+    setEditingItem(item);
+    setSelectedItemForDetail(null);
+    setActiveTab('upload');
+  };
+
+  // CRUD: UPDATE
+  const handleUpdateItem = (updatedItem: BarterItem) => {
+    setItems((prev) =>
+      prev.map((it) => (it.id === updatedItem.id ? updatedItem : it))
+    );
+    if (selectedItemForDetail?.id === updatedItem.id) {
+      setSelectedItemForDetail(updatedItem);
+    }
+    setEditingItem(null);
+    setActiveTab('market');
+    showToast(`Listing "${updatedItem.title}" updated successfully!`);
+  };
+
+  // CRUD: DELETE
+  const handleDeleteItem = (itemId: string) => {
+    const target = items.find((i) => i.id === itemId);
+    const title = target ? target.title : 'Listing';
+    setItems((prev) => prev.filter((it) => it.id !== itemId));
+    if (selectedItemForDetail?.id === itemId) {
+      setSelectedItemForDetail(null);
+    }
+    if (editingItem?.id === itemId) {
+      setEditingItem(null);
+    }
+    showToast(`"${title}" deleted from marketplace.`);
+  };
+
   const handleInitiateTrade = (
     targetItem: BarterItem,
     offeringTitle: string,
-    offeringTier: ValueTier
+    offeringCondition: ItemCondition
   ) => {
     const activeOwner = currentUser || CURRENT_USER;
     const newMatchId = `match-${Date.now()}`;
+    const offeringImages = [
+      'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&auto=format&fit=crop&q=80',
+    ];
+
+    const targetImages = (targetItem.images && targetItem.images.length > 0)
+      ? targetItem.images
+      : [targetItem.imageUrl || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80'];
+
     const newMatch: TradeMatch = {
       id: newMatchId,
       partner: targetItem.owner,
       matchedAt: 'Just now',
+      createdAt: new Date().toISOString(),
       status: 'Ready to Trade',
+      isArchived: false,
       myOffering: {
         title: offeringTitle,
-        imageUrl: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&auto=format&fit=crop&q=80',
-        tier: offeringTier,
+        images: offeringImages,
+        imageUrl: offeringImages[0],
+        condition: offeringCondition,
+        usageDuration: 'Used',
       },
       theirOffering: {
         title: targetItem.title,
-        imageUrl: targetItem.imageUrl,
-        tier: targetItem.tier,
+        images: targetImages,
+        imageUrl: targetImages[0],
+        condition: targetItem.condition,
+        usageDuration: targetItem.usageDuration,
       },
       unreadCount: 1,
       lastMessage: `Trade proposal initiated for ${targetItem.title}.`,
@@ -243,8 +334,10 @@ export default function App() {
       senderId: activeOwner.id,
       senderName: activeOwner.name,
       senderAvatar: activeOwner.avatar,
-      text: `Hi ${targetItem.owner.name}! I'm interested in trading my ${offeringTitle} (Tier ${offeringTier}) for your ${targetItem.title}. Does that work for you?`,
+      text: `Hi ${targetItem.owner.name}! I'm interested in trading my ${offeringTitle} (${offeringCondition}) for your ${targetItem.title} (${targetItem.condition}). Does that work for you?`,
       timestamp: 'Just now',
+      createdAt: new Date().toISOString(),
+      isEdited: false,
     };
 
     setMatches((prev) => [newMatch, ...prev]);
@@ -257,6 +350,7 @@ export default function App() {
           senderId: 'system',
           senderName: 'System',
           timestamp: 'TODAY',
+          createdAt: new Date().toISOString(),
           isSystemEvent: true,
           systemEventType: 'initiated',
         },
@@ -270,9 +364,9 @@ export default function App() {
 
     // Simulated typing delay for partner to evaluate offer fairness
     setTimeout(() => {
-      const offeredItemTier = offeringTier;
-      const requestedItemTier = targetItem.tier;
-      const replyText = evaluateTradeFairness(offeredItemTier, requestedItemTier, '', true);
+      const offeredCondition = offeringCondition;
+      const requestedCondition = targetItem.condition;
+      const replyText = evaluateTradeFairness(offeredCondition, requestedCondition, '', true);
 
       const partnerDecisionMsg: ChatMessage = {
         id: `msg-rep-${Date.now()}`,
@@ -282,6 +376,8 @@ export default function App() {
         senderAvatar: targetItem.owner.avatar,
         text: replyText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        createdAt: new Date().toISOString(),
+        isEdited: false,
       };
 
       setMessages((prev) => ({
@@ -292,14 +388,14 @@ export default function App() {
   };
 
   const evaluateTradeFairness = (
-    offeredItemTier: number,
-    requestedItemTier: number,
+    offeredCondition: ItemCondition | string,
+    requestedCondition: ItemCondition | string,
     messageText: string = '',
     isOfferSubmission: boolean = false
   ): string => {
     const text = messageText.toLowerCase().trim();
 
-    // 1. Negative Sentiment & Rejection / Cancellation Check (Evaluated first before any other logic)
+    // 1. Negative Sentiment & Rejection / Cancellation Check
     if (
       /\b(no|nope|don't\s+want|dont\s+want|don't\s+like|dont\s+like|no\s+thanks|no\s+thank\s+you|cancel|reject|nevermind|never\s+mind|pass|not\s+interested|not\s+into\s+it|decline)\b/i.test(text) ||
       text.includes("don't want") ||
@@ -313,36 +409,45 @@ export default function App() {
       return "Oh, no worries at all! Feel free to hit the 'Reject Trade' button, or let me know if you want to swap for something else instead.";
     }
 
-    // 2. Initial Offer Submission / Trade Tier Evaluation
+    // 2. Initial Offer Submission / Condition Evaluation
     if (isOfferSubmission) {
-      if (offeredItemTier >= requestedItemTier) {
-        return "I just checked your offer. This looks like a completely fair trade to me! Are you free to meet up at the APC Cafeteria or the campus library later today to swap?";
+      const conditionRanks: Record<string, number> = {
+        'New': 4,
+        'Like New': 3,
+        '2nd Hand': 2,
+        'Heavily Used': 1,
+      };
+      const offeredRank = conditionRanks[offeredCondition] || 2;
+      const requestedRank = conditionRanks[requestedCondition] || 2;
+
+      if (offeredRank >= requestedRank - 1) {
+        return `I just checked your offer! The ${offeredCondition} condition sounds like a fair match for my ${requestedCondition} item. Are you free to meet up at the APC Cafeteria or the campus library later today to inspect and swap?`;
       } else {
-        return `Hey, thanks for the offer, but I don't think a Tier ${offeredItemTier} item is a fair swap for my Tier ${requestedItemTier} item. Do you have anything higher tier you'd be willing to trade?`;
+        return `Hey, thanks for the offer! Since my item is in ${requestedCondition} condition, could you share more details about the working condition and usage history of your item before we arrange a meetup?`;
       }
     }
 
-    // 3. Greetings ("hi", "hello", "hey", "greetings") with strict word boundaries
+    // 3. Greetings
     if (/\b(hi|hello|hey|greetings|good\s+(morning|afternoon|evening))\b/i.test(text)) {
-      return "Hey! Thanks for reaching out. I'm definitely interested in this trade. Are you free to meet up on campus sometime soon?";
+      return "Hey! Thanks for reaching out. I'm definitely interested in this barter. Are you free to meet up on campus sometime soon?";
     }
 
-    // 4. Meetups & Location/Time ("meet", "where", "when", "location", "place") -> Specific Campus Landmarks
+    // 4. Meetups & Location/Time
     if (/\b(meet|where|when|place|location|cafeteria|library|canteen|court|gym|hall)\b/i.test(text)) {
       const campusMeetupSuggestions = [
-        "I can meet you on the 7th floor at the Library, or down at the 1st-floor Cafeteria across from Multipurpose Hall 1. Which works better?",
-        "How about we meet on the 3rd floor at the Student Activities Office? It's a good spot to sit down and check the item.",
+        "I can meet you on the 7th floor at the Library, or down at the 1st-floor Cafeteria across from Multipurpose Hall 1. Which works better for you?",
+        "How about we meet on the 3rd floor at the Student Activities Office? It's a quiet spot to sit down and check the item.",
         "I'm heading up to the 11th-floor covered court soon, but I can also meet near the 10th-floor Gym if you're around there.",
       ];
       return campusMeetupSuggestions[Math.floor(Math.random() * campusMeetupSuggestions.length)];
     }
 
-    // 5. Condition & Working Status ("condition", "working", "issue")
-    if (/\b(condition|working|issue|issues|damaged?|scratches?|test|inspect)\b/i.test(text)) {
-      return "It's in great condition! We can test it together when we meet up just to be sure.";
+    // 5. Condition & Working Status
+    if (/\b(condition|working|issue|issues|damaged?|scratches?|test|inspect|duration|usage|used)\b/i.test(text)) {
+      return "It's in great condition as described in my listing! We can inspect and test it together when we meet on campus.";
     }
 
-    // 6. Affirmations, Confirmation & Ready to proceed (Strict positive intent only)
+    // 6. Affirmations, Confirmation & Ready to proceed
     if (
       /^(ready|all good|good|all set|let's do it|yes|sure|confirm|finalize)[.!]?$/i.test(text) ||
       /\b(ready\s+to\s+(trade|swap|finalize)|let's\s+finalize|confirm\s+trade|finalize\s+trade|all\s+good|all\s+set|let's\s+do\s+it|sounds\s+good|looks\s+good)\b/i.test(text)
@@ -350,26 +455,29 @@ export default function App() {
       return "Awesome! If everything looks good on your end, go ahead and click 'Confirm & Finalize Barter' and we can lock this in.";
     }
 
-    // 7. Tier & Fair Trade comparisons
-    if (/\b(fair|offer|tier|swap|exchange|trade)\b/i.test(text)) {
-      if (offeredItemTier >= requestedItemTier) {
-        return "I just checked your offer. This looks like a completely fair trade to me! Are you free to meet up at the APC Cafeteria or the campus library later today to swap?";
-      } else {
-        return `Hey, thanks for the offer, but I don't think a Tier ${offeredItemTier} item is a fair swap for my Tier ${requestedItemTier} item. Do you have anything higher tier you'd be willing to trade?`;
-      }
+    // 7. Fair Trade comparisons
+    if (/\b(fair|offer|swap|exchange|trade|deal)\b/i.test(text)) {
+      return `Sounds like a solid trade! I am happy to swap with you. Let me know what time works best for your schedule.`;
     }
 
-    // 8. Randomized Conversational Fallbacks
+    // 8. Fallback Responses
     const fallbackResponses = [
       "Got it. Let me know if anything else comes up!",
-      "Makes sense to me. I'm looking forward to the trade.",
-      "Sounds good. I'll make sure the item is ready to go.",
+      "Makes sense to me. Looking forward to our campus trade!",
+      "Sounds good. I'll make sure the item is packaged and ready to go.",
     ];
 
     return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
   };
 
   const handleSendMessage = (matchId: string, text: string, imageUrl?: string) => {
+    const activeMatch = matches.find((m) => m.id === matchId);
+    // UI Restriction: Cannot send messages if trade is finalized or rejected
+    if (activeMatch && (activeMatch.status === 'Trade Finalized' || activeMatch.status === 'Trade Rejected')) {
+      showToast('This conversation is locked because the trade is closed.');
+      return;
+    }
+
     const activeOwner = currentUser || CURRENT_USER;
     const newMsg: ChatMessage = {
       id: `msg-${Date.now()}`,
@@ -380,6 +488,8 @@ export default function App() {
       text: text || undefined,
       imageUrl,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      createdAt: new Date().toISOString(),
+      isEdited: false,
     };
 
     setMessages((prev) => ({
@@ -387,19 +497,33 @@ export default function App() {
       [matchId]: [...(prev[matchId] || []), newMsg],
     }));
 
-    // Simulated typing delay before dynamic auto-responder reply
+    setMatches((prev) =>
+      prev.map((m) =>
+        m.id === matchId
+          ? {
+              ...m,
+              lastMessage: text || (imageUrl ? 'Shared an image' : m.lastMessage),
+            }
+          : m
+      )
+    );
+
+    // Simulated partner auto-responder
     setTimeout(() => {
-      const activeMatch = matches.find((m) => m.id === matchId);
+      const matchNow = matches.find((m) => m.id === matchId);
+      if (matchNow && (matchNow.status === 'Trade Finalized' || matchNow.status === 'Trade Rejected')) {
+        return;
+      }
       const activePartner = activeMatch?.partner;
       if (activePartner && activePartner.id !== activeOwner.id) {
-        const offeredItemTier = activeMatch?.myOffering.tier || 1;
-        const requestedItemTier = activeMatch?.theirOffering.tier || 1;
+        const offeredCondition = activeMatch?.myOffering.condition || 'Like New';
+        const requestedCondition = activeMatch?.theirOffering.condition || 'Like New';
         const threadMsgs = messages[matchId] || [];
         const isFirstMessage = threadMsgs.filter((m) => m.senderId === activeOwner.id).length <= 1;
 
         const replyText = evaluateTradeFairness(
-          offeredItemTier,
-          requestedItemTier,
+          offeredCondition,
+          requestedCondition,
           text || '',
           isFirstMessage && (text?.toLowerCase().includes('offer') || text?.toLowerCase().includes('trade') || text?.toLowerCase().includes('swap'))
         );
@@ -412,14 +536,71 @@ export default function App() {
           senderAvatar: activePartner.avatar,
           text: replyText,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          createdAt: new Date().toISOString(),
+          isEdited: false,
         };
 
         setMessages((prev) => ({
           ...prev,
           [matchId]: [...(prev[matchId] || []), partnerReply],
         }));
+
+        setMatches((prev) =>
+          prev.map((m) =>
+            m.id === matchId ? { ...m, lastMessage: replyText } : m
+          )
+        );
       }
     }, 1200);
+  };
+
+  const handleEditMessage = (matchId: string, messageId: string, newText: string) => {
+    setMessages((prev) => {
+      const list = prev[matchId] || [];
+      return {
+        ...prev,
+        [matchId]: list.map((msg) =>
+          msg.id === messageId
+            ? { ...msg, text: newText, isEdited: true }
+            : msg
+        ),
+      };
+    });
+    showToast('Message edited');
+  };
+
+  const handleDeleteMessage = (matchId: string, messageId: string) => {
+    setMessages((prev) => {
+      const list = prev[matchId] || [];
+      return {
+        ...prev,
+        [matchId]: list.map((msg) =>
+          msg.id === messageId
+            ? {
+                ...msg,
+                text: 'This message was deleted.',
+                isDeleted: true,
+                imageUrl: undefined,
+                imageCaption: undefined,
+              }
+            : msg
+        ),
+      };
+    });
+    showToast('Message deleted');
+  };
+
+  const handleToggleArchive = (matchId: string) => {
+    setMatches((prev) =>
+      prev.map((m) => {
+        if (m.id === matchId) {
+          const nextArchived = !m.isArchived;
+          showToast(nextArchived ? 'Conversation archived' : 'Conversation unarchived');
+          return { ...m, isArchived: nextArchived };
+        }
+        return m;
+      })
+    );
   };
 
   const handleFinalizeTrade = (matchId: string) => {
@@ -430,11 +611,10 @@ export default function App() {
   const handleConfirmFinalize = (matchId: string) => {
     setMatches((prev) =>
       prev.map((m) =>
-        m.id === matchId ? { ...m, status: 'Trade Finalized' } : m
+        m.id === matchId ? { ...m, status: 'Trade Finalized', isArchived: true } : m
       )
     );
 
-    // Add system notification to message thread
     setMessages((prev) => ({
       ...prev,
       [matchId]: [
@@ -444,24 +624,24 @@ export default function App() {
           matchId,
           senderId: 'system',
           senderName: 'System',
-          text: 'Trade successfully finalized! Exchange verified.',
+          text: 'Trade successfully finalized! Exchange verified. Chat thread is now locked.',
           timestamp: 'Just now',
+          createdAt: new Date().toISOString(),
           isSystemEvent: true,
           systemEventType: 'trade_finalized',
         },
       ],
     }));
-    showToast('Barter confirmed and verified!');
+    showToast('Barter confirmed and verified! Chat thread locked.');
   };
 
   const handleRejectTrade = (matchId: string) => {
     setMatches((prev) =>
       prev.map((m) =>
-        m.id === matchId ? { ...m, status: 'Pending Response' } : m
+        m.id === matchId ? { ...m, status: 'Trade Rejected', isArchived: true } : m
       )
     );
 
-    // Add system notification to message thread
     setMessages((prev) => ({
       ...prev,
       [matchId]: [
@@ -471,14 +651,15 @@ export default function App() {
           matchId,
           senderId: 'system',
           senderName: 'System',
-          text: 'Trade proposal was rejected.',
+          text: 'Trade proposal was rejected. Chat thread is now locked.',
           timestamp: 'Just now',
+          createdAt: new Date().toISOString(),
           isSystemEvent: true,
-          systemEventType: 'trade_updated',
+          systemEventType: 'trade_rejected',
         },
       ],
     }));
-    showToast('Trade proposal rejected');
+    showToast('Trade proposal rejected. Chat thread locked.');
   };
 
   const currentMatch = matches.find((m) => m.id === activeMatchId) || matches[0];
@@ -497,7 +678,7 @@ export default function App() {
       }`}>
         {/* Floating Feedback Toast */}
         {toastMessage && (
-          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 max-w-sm w-full px-4">
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 max-w-sm w-full px-4 pointer-events-none">
             <div className="p-3.5 rounded-2xl bg-emerald-800 text-white shadow-2xl flex items-center gap-3 text-xs font-semibold animate-in fade-in slide-in-from-top duration-200 border border-emerald-600/40">
               <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
               <span className="truncate flex-1">{toastMessage}</span>
@@ -509,7 +690,10 @@ export default function App() {
         <Header
           theme={theme}
           activeTab={activeTab}
-          onChangeTab={(tab) => setActiveTab(tab)}
+          onChangeTab={(tab) => {
+            if (tab !== 'upload') setEditingItem(null);
+            setActiveTab(tab);
+          }}
           currentUser={currentUser}
           unreadMatches={matches.filter((m) => m.unreadCount).length}
           unreadMessages={2}
@@ -524,9 +708,15 @@ export default function App() {
             <MarketView
               items={items}
               theme={theme}
+              currentUser={currentUser}
               onSelectItem={(item) => setSelectedItemForDetail(item)}
               onToggleLike={handleToggleLike}
-              onOpenUpload={() => setActiveTab('upload')}
+              onOpenUpload={() => {
+                setEditingItem(null);
+                setActiveTab('upload');
+              }}
+              onEditItem={handleStartEditItem}
+              onDeleteItem={handleDeleteItem}
             />
           )}
 
@@ -534,9 +724,14 @@ export default function App() {
             <UploadView
               theme={theme}
               currentUser={currentUser}
+              editingItem={editingItem}
               onOpenAuthModal={handleOpenAuth}
               onPostSuccess={handlePostSuccess}
-              onCancel={() => setActiveTab('market')}
+              onUpdateSuccess={handleUpdateItem}
+              onCancel={() => {
+                setEditingItem(null);
+                setActiveTab('market');
+              }}
             />
           )}
 
@@ -557,12 +752,16 @@ export default function App() {
               allMatches={matches}
               messages={currentMessages}
               theme={theme}
+              currentUser={currentUser}
               onToggleTheme={toggleTheme}
               onBack={() => setActiveTab('matches')}
               onSelectMatch={(mId) => setActiveMatchId(mId)}
               onSendMessage={handleSendMessage}
+              onEditMessage={handleEditMessage}
+              onDeleteMessage={handleDeleteMessage}
               onFinalizeTrade={handleFinalizeTrade}
               onRejectTrade={handleRejectTrade}
+              onToggleArchive={handleToggleArchive}
             />
           )}
         </main>
@@ -570,7 +769,10 @@ export default function App() {
         {/* Bottom Navigation for Mobile Only */}
         <BottomNav
           activeTab={activeTab}
-          onChangeTab={(tab) => setActiveTab(tab)}
+          onChangeTab={(tab) => {
+            if (tab !== 'upload') setEditingItem(null);
+            setActiveTab(tab);
+          }}
           theme={theme}
           unreadMatches={matches.filter((m) => m.unreadCount).length}
           unreadMessages={2}
@@ -593,9 +795,12 @@ export default function App() {
         <ItemDetailModal
           item={selectedItemForDetail}
           theme={theme}
+          currentUser={currentUser}
           onClose={() => setSelectedItemForDetail(null)}
           onToggleLike={handleToggleLike}
           onProposeTrade={handleInitiateTrade}
+          onEditItem={handleStartEditItem}
+          onDeleteItem={handleDeleteItem}
         />
 
         {/* Finalize Trade Confirmation Modal */}
@@ -604,6 +809,7 @@ export default function App() {
           isOpen={!!finalizeMatch}
           onClose={() => setFinalizeMatch(null)}
           theme={theme}
+          currentUser={currentUser}
           onConfirmFinalize={handleConfirmFinalize}
         />
 

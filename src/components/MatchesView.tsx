@@ -1,40 +1,47 @@
 import React, { useState } from 'react';
-import { Handshake, Clock, ArrowRightLeft, ArrowRight, MessageSquare, CheckCircle2, User, Sparkles, ShieldCheck, Filter } from 'lucide-react';
-import { TradeMatch, ThemeMode, ValueTier } from '../types';
+import { Handshake, Clock, ArrowRightLeft, ArrowRight, MessageSquare, CheckCircle2, User, Sparkles, ShieldCheck, Filter, XCircle, Lock, Archive, Star } from 'lucide-react';
+import { TradeMatch, ThemeMode, ItemCondition } from '../types';
 import { SafeImage } from './SafeImage';
 
 interface MatchesViewProps {
   matches: TradeMatch[];
   theme: ThemeMode;
   onOpenChat: (matchId: string) => void;
-  onCancelMatch?: (matchId: string) => void;
 }
 
 export const MatchesView: React.FC<MatchesViewProps> = ({
   matches,
   theme,
   onOpenChat,
-  onCancelMatch,
 }) => {
-  const [filterTab, setFilterTab] = useState<'all' | 'ready' | 'pending' | 'finalized'>('all');
+  const [filterTab, setFilterTab] = useState<'all' | 'ready' | 'pending' | 'finalized' | 'archived'>('all');
   const isDark = theme === 'dark';
 
-  const readyMatches = matches.filter((m) => m.status === 'Ready to Trade');
-  const pendingMatches = matches.filter((m) => m.status === 'Pending Response');
+  const readyMatches = matches.filter((m) => m.status === 'Ready to Trade' && !m.isArchived);
+  const pendingMatches = matches.filter((m) => m.status === 'Pending Response' && !m.isArchived);
   const finalizedMatches = matches.filter((m) => m.status === 'Trade Finalized');
+  const archivedMatches = matches.filter((m) => m.isArchived || m.status === 'Trade Finalized' || m.status === 'Trade Rejected');
 
   const displayedMatches = matches.filter((m) => {
-    if (filterTab === 'ready') return m.status === 'Ready to Trade';
-    if (filterTab === 'pending') return m.status === 'Pending Response';
+    if (filterTab === 'ready') return m.status === 'Ready to Trade' && !m.isArchived;
+    if (filterTab === 'pending') return m.status === 'Pending Response' && !m.isArchived;
     if (filterTab === 'finalized') return m.status === 'Trade Finalized';
+    if (filterTab === 'archived') return m.isArchived || m.status === 'Trade Finalized' || m.status === 'Trade Rejected';
     return true;
   });
 
-  const renderTierPill = (tier: ValueTier) => {
-    const color = tier === 1 ? 'bg-emerald-600' : tier === 2 ? 'bg-sky-600' : 'bg-indigo-600';
+  const renderConditionPill = (condition?: ItemCondition) => {
+    const cond = condition || 'Like New';
+    const color = cond === 'New' 
+      ? 'bg-emerald-600' 
+      : cond === 'Like New' 
+      ? 'bg-sky-600' 
+      : cond === '2nd Hand' 
+      ? 'bg-amber-600' 
+      : 'bg-purple-600';
     return (
       <span className={`px-2 py-0.5 rounded-md ${color} text-white font-bold text-[10px] shadow-xs`}>
-        Tier {tier}
+        {cond}
       </span>
     );
   };
@@ -50,7 +57,7 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
             Trade Matches
           </h1>
           <p className="text-base text-slate-600 dark:text-slate-400 mt-1">
-            Manage your active barter pairings and message campus traders.
+            Manage active negotiations, online partner presence, and finalized exchanges.
           </p>
         </div>
 
@@ -71,8 +78,8 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
           <div className={`p-4 rounded-2xl border ${
             isDark ? 'bg-[#0B132B] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
           }`}>
-            <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">Pending Review</div>
-            <div className="text-3xl font-extrabold mt-1 text-amber-500">{pendingMatches.length}</div>
+            <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">Archived / Closed</div>
+            <div className="text-3xl font-extrabold mt-1 text-purple-500">{archivedMatches.length}</div>
           </div>
           <div className={`p-4 rounded-2xl border ${
             isDark ? 'bg-[#0B132B] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
@@ -91,32 +98,38 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
             { id: 'ready', label: 'Ready to Trade', count: readyMatches.length },
             { id: 'pending', label: 'Pending Response', count: pendingMatches.length },
             { id: 'finalized', label: 'Finalized Trades', count: finalizedMatches.length },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setFilterTab(tab.id as any)}
-              className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap active:scale-95 ${
-                filterTab === tab.id
-                  ? isDark
-                    ? 'bg-emerald-500 text-slate-950 shadow-xs font-extrabold'
-                    : 'bg-emerald-600 text-white shadow-xs font-extrabold'
-                  : isDark
-                  ? 'text-slate-400 hover:text-white hover:bg-slate-800/80'
-                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <span>{tab.label}</span>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                filterTab === tab.id ? 'bg-black/20 text-current' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-              }`}>
-                {tab.count}
-              </span>
-            </button>
-          ))}
+            { id: 'archived', label: 'Archived', count: archivedMatches.length },
+          ].map((tab) => {
+            const isActive = filterTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setFilterTab(tab.id as any)}
+                className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
+                  isActive
+                    ? 'bg-emerald-600 text-white shadow-md'
+                    : isDark
+                    ? 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span className={`px-2 py-0.5 rounded-full text-xs ${
+                  isActive 
+                    ? 'bg-emerald-700 text-white' 
+                    : isDark 
+                    ? 'bg-slate-800 text-slate-300' 
+                    : 'bg-slate-100 text-slate-600'
+                }`}>
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Grid of Matches */}
+      {/* Matches Grid */}
       {displayedMatches.length === 0 ? (
         <div className={`p-12 text-center rounded-3xl border ${
           isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-200'
@@ -130,6 +143,8 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
           {displayedMatches.map((match) => {
             const isReady = match.status === 'Ready to Trade';
             const isFinalized = match.status === 'Trade Finalized';
+            const isRejected = match.status === 'Trade Rejected';
+            const partnerIsOnline = match.partner.isOnline !== undefined ? match.partner.isOnline : true;
 
             return (
               <div
@@ -141,28 +156,51 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
                 }`}
               >
                 <div>
-                  {/* Top Partner Profile */}
+                  {/* Top Partner Profile with Real-Time Presence Indicator */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <img
-                        src={match.partner.avatar}
-                        alt={match.partner.name}
-                        className="w-11 h-11 rounded-full object-cover ring-2 ring-emerald-500/30 shrink-0"
-                      />
+                      <div className="relative shrink-0">
+                        <img
+                          src={match.partner.avatar}
+                          alt={match.partner.name}
+                          className="w-11 h-11 rounded-full object-cover ring-2 ring-emerald-500/30"
+                        />
+                        {partnerIsOnline ? (
+                          <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white dark:border-slate-900"></span>
+                          </span>
+                        ) : (
+                          <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-slate-400 border-2 border-white dark:border-slate-900" />
+                        )}
+                      </div>
                       <div className="min-w-0">
                         <h3 className="font-bold text-base leading-tight truncate text-slate-900 dark:text-white">
                           {match.partner.name}
                         </h3>
-                        <p className="text-xs text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1 mt-0.5">
-                          <ShieldCheck className="w-3.5 h-3.5" />
-                          ★ {match.partner.trustScore}
-                        </p>
+                        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                          <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-md bg-amber-500/15 text-amber-700 dark:text-amber-400 font-extrabold text-[11px] border border-amber-500/25">
+                            <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                            <span>{match.partner.rating ? match.partner.rating.toFixed(1) : '5.0'}</span>
+                          </span>
+                          <span className="text-slate-400 text-xs">•</span>
+                          <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                            {match.partner.trustScore}
+                          </span>
+                          <span className="text-slate-400 text-xs">•</span>
+                          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                            {partnerIsOnline ? 'Online' : match.partner.lastActive || 'Offline'}
+                          </span>
+                        </div>
                       </div>
                     </div>
 
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                       isFinalized
-                        ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20'
+                        ? 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30'
+                        : isRejected
+                        ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30'
                         : isReady
                         ? isDark 
                           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' 
@@ -173,8 +211,8 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
                     </span>
                   </div>
 
-                  {/* Visual Item Swap Pair Box */}
-                  <div className={`p-4 rounded-2xl border mb-4 flex items-center justify-between gap-3 ${
+                  {/* Visual Items Exchanged Container */}
+                  <div className={`p-4 rounded-2xl border flex items-center justify-between mb-4 ${
                     isDark ? 'bg-slate-900/70 border-slate-800' : 'bg-slate-50 border-slate-200'
                   }`}>
                     {/* Your item */}
@@ -182,13 +220,13 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
                       <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">You Offer</div>
                       <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-200 dark:bg-slate-800 mb-2 shadow-xs">
                         <SafeImage
-                          src={match.myOffering.imageUrl}
+                          src={match.myOffering.images?.[0] || match.myOffering.imageUrl}
                           alt={match.myOffering.title}
                           title={match.myOffering.title}
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute top-1 right-1">
-                          {renderTierPill(match.myOffering.tier)}
+                          {renderConditionPill(match.myOffering.condition)}
                         </div>
                       </div>
                       <span className="text-sm font-bold leading-snug line-clamp-2 text-slate-900 dark:text-white">
@@ -211,13 +249,13 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
                       <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">You Receive</div>
                       <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-200 dark:bg-slate-800 mb-2 shadow-xs">
                         <SafeImage
-                          src={match.theirOffering.imageUrl}
+                          src={match.theirOffering.images?.[0] || match.theirOffering.imageUrl}
                           alt={match.theirOffering.title}
                           title={match.theirOffering.title}
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute top-1 right-1">
-                          {renderTierPill(match.theirOffering.tier)}
+                          {renderConditionPill(match.theirOffering.condition)}
                         </div>
                       </div>
                       <span className="text-sm font-bold leading-snug line-clamp-2 text-slate-900 dark:text-white">
@@ -234,21 +272,22 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
                   )}
                 </div>
 
-                {/* Action button */}
-                <button
-                  id={`btn-message-match-${match.id}`}
-                  onClick={() => onOpenChat(match.id)}
-                  className={`w-full py-3 px-4 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 ${
-                    isReady
-                      ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
-                      : isDark
-                      ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
-                      : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200'
-                  }`}
-                >
-                  <MessageSquare className="w-4 h-4 stroke-[2.5]" />
-                  <span>{isReady ? 'Chat & Finalize Barter' : 'View Message Thread'}</span>
-                </button>
+                {/* Bottom Action Strip */}
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{match.matchedAt}</span>
+                  </div>
+
+                  <button
+                    onClick={() => onOpenChat(match.id)}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>{isFinalized ? 'View Archived Chat' : isRejected ? 'View Closed Chat' : 'Open Chat'}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             );
           })}
