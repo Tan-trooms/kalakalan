@@ -40,59 +40,59 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
       ? 'bg-amber-600' 
       : 'bg-purple-600';
     return (
-      <span className={`px-2 py-0.5 rounded-md ${color} text-white font-bold text-[10px] shadow-xs`}>
+      <span className={`px-2 py-0.5 rounded-full ${color} text-white font-semibold text-[11px] shadow-sm`}>
         {cond}
       </span>
     );
   };
 
   return (
-    <div className={`pb-28 pt-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full min-h-screen transition-colors duration-200 ${
+    <div className={`pb-36 pt-8 sm:pt-10 px-5 sm:px-8 lg:px-10 max-w-6xl mx-auto w-full min-h-screen transition-colors duration-200 ${
       isDark ? 'text-slate-100' : 'text-slate-900'
     }`}>
       {/* Title Header */}
       <div className="mb-8">
-        <div className="mb-6">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+        <div className="mb-7">
+          <h1 className="text-[28px] sm:text-[32px] font-bold tracking-tight text-slate-900 dark:text-white">
             Trade Matches
           </h1>
-          <p className="text-base text-slate-600 dark:text-slate-400 mt-1">
+          <p className="text-[15px] text-slate-600 dark:text-slate-400 mt-2 leading-relaxed max-w-2xl">
             Manage active negotiations, online partner presence, and finalized exchanges.
           </p>
         </div>
 
         {/* Minimal Metrics Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className={`p-4 rounded-2xl border ${
-            isDark ? 'bg-[#0B132B] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-7">
+          <div className={`p-5 rounded-2xl border fb-card ${
+            isDark ? 'bg-[#242526] border-slate-800' : 'bg-white border-slate-200'
           }`}>
-            <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">Total Matches</div>
-            <div className="text-3xl font-extrabold mt-1 text-emerald-600 dark:text-emerald-400">{matches.length}</div>
+            <div className="text-[13px] font-medium text-slate-500 dark:text-slate-400">Total Matches</div>
+            <div className="text-[28px] leading-8 font-bold mt-2 text-emerald-600 dark:text-emerald-400">{matches.length}</div>
           </div>
-          <div className={`p-4 rounded-2xl border ${
-            isDark ? 'bg-[#0B132B] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
+          <div className={`p-5 rounded-2xl border fb-card ${
+            isDark ? 'bg-[#242526] border-slate-800' : 'bg-white border-slate-200'
           }`}>
-            <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">Ready to Trade</div>
-            <div className="text-3xl font-extrabold mt-1 text-emerald-600 dark:text-emerald-400">{readyMatches.length}</div>
+            <div className="text-[13px] font-medium text-slate-500 dark:text-slate-400">Ready to Trade</div>
+            <div className="text-[28px] leading-8 font-bold mt-2 text-emerald-600 dark:text-emerald-400">{readyMatches.length}</div>
           </div>
-          <div className={`p-4 rounded-2xl border ${
-            isDark ? 'bg-[#0B132B] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
+          <div className={`p-5 rounded-2xl border fb-card ${
+            isDark ? 'bg-[#242526] border-slate-800' : 'bg-white border-slate-200'
           }`}>
-            <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">Archived / Closed</div>
-            <div className="text-3xl font-extrabold mt-1 text-purple-500">{archivedMatches.length}</div>
+            <div className="text-[13px] font-medium text-slate-500 dark:text-slate-400">Archived / Closed</div>
+            <div className="text-[28px] leading-8 font-bold mt-2 text-purple-500">{archivedMatches.length}</div>
           </div>
-          <div className={`p-4 rounded-2xl border ${
-            isDark ? 'bg-[#0B132B] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
+          <div className={`p-5 rounded-2xl border fb-card ${
+            isDark ? 'bg-[#242526] border-slate-800' : 'bg-white border-slate-200'
           }`}>
-            <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">APC Student Security</div>
-            <div className="text-sm font-bold mt-2 flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
+            <div className="text-[13px] font-medium text-slate-500 dark:text-slate-400">APC Student Security</div>
+            <div className="text-sm font-semibold mt-2.5 flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400">
               <ShieldCheck className="w-4 h-4" /> 100% Verified Rams
             </div>
           </div>
         </div>
 
         {/* Filter Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2.5 border-b border-slate-200 dark:border-slate-800 pb-4 overflow-x-auto no-scrollbar">
           {[
             { id: 'all', label: 'All Matches', count: matches.length },
             { id: 'ready', label: 'Ready to Trade', count: readyMatches.length },
@@ -105,12 +105,12 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
               <button
                 key={tab.id}
                 onClick={() => setFilterTab(tab.id as any)}
-                className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
+                className={`px-4 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
                   isActive
-                    ? 'bg-emerald-600 text-white shadow-md'
+                    ? 'bg-emerald-600 text-white shadow-sm'
                     : isDark
-                    ? 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:text-slate-900'
+                    ? 'bg-[#242526] border border-slate-800 text-slate-400 hover:text-white'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:text-slate-900 fb-card'
                 }`}
               >
                 <span>{tab.label}</span>
@@ -131,15 +131,15 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
 
       {/* Matches Grid */}
       {displayedMatches.length === 0 ? (
-        <div className={`p-12 text-center rounded-3xl border ${
-          isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-200'
+        <div className={`p-14 text-center rounded-2xl border fb-card ${
+          isDark ? 'bg-[#242526] border-slate-800' : 'bg-white border-slate-200'
         }`}>
-          <Handshake className="w-12 h-12 text-slate-400 mx-auto mb-3 opacity-40" />
-          <h3 className="font-bold text-lg text-slate-900 dark:text-white">No matches found in this category</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Browse the marketplace and propose trades to initiate new barter pairings.</p>
+          <Handshake className="w-12 h-12 text-slate-400 mx-auto mb-4 opacity-40" />
+          <h3 className="font-semibold text-lg text-slate-900 dark:text-white">No matches found in this category</h3>
+          <p className="text-[15px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">Browse the marketplace and propose trades to initiate new barter pairings.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {displayedMatches.map((match) => {
             const isReady = match.status === 'Ready to Trade';
             const isFinalized = match.status === 'Trade Finalized';
@@ -149,15 +149,15 @@ export const MatchesView: React.FC<MatchesViewProps> = ({
             return (
               <div
                 key={match.id}
-                className={`rounded-3xl border p-5 transition-all duration-300 hover:shadow-xl flex flex-col justify-between ${
+                className={`rounded-2xl border p-6 transition-all duration-300 hover:shadow-lg flex flex-col justify-between fb-card ${
                   isDark 
-                    ? 'bg-[#0B132B] border-slate-800 hover:border-emerald-500/50' 
-                    : 'bg-white border-slate-200 shadow-sm hover:border-emerald-600/40'
+                    ? 'bg-[#242526] border-slate-800 hover:border-emerald-500/40' 
+                    : 'bg-white border-slate-200 hover:border-emerald-600/30'
                 }`}
               >
                 <div>
                   {/* Top Partner Profile with Real-Time Presence Indicator */}
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-3">
                       <div className="relative shrink-0">
                         <img
