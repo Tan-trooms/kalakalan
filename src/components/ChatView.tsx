@@ -11,24 +11,19 @@ import {
   ShieldCheck, 
   MapPin, 
   Search, 
-  Check, 
   ChevronDown, 
   XCircle, 
   Menu, 
   Info, 
   Lock, 
   Edit2, 
-  X, 
   Archive, 
   Clock, 
-  Circle,
-  Maximize2,
   Star,
   Receipt,
   Trash2
 } from 'lucide-react';
 import { ChatMessage, TradeMatch, ThemeMode, UserProfile } from '../types';
-import { CURRENT_USER } from '../data/mockData';
 import { SafeImage } from './SafeImage';
 import { ImageLightboxModal } from './ImageLightboxModal';
 import { TradeReceiptModal, TradeReceiptData } from './TradeReceiptModal';
@@ -74,6 +69,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
   const [sidebarFilter, setSidebarFilter] = useState<'all' | 'active' | 'archived'>('all');
   const [showLeftSidebar, setShowLeftSidebar] = useState(true);
   const [showRightSidebar, setShowRightSidebar] = useState(true);
+  const [showQuickReplies, setShowQuickReplies] = useState(false);
   const [lightboxData, setLightboxData] = useState<{ images: string[]; title: string; initialIndex: number } | null>(null);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
 
@@ -202,12 +198,12 @@ export const ChatView: React.FC<ChatViewProps> = ({
     : match.partner.trustScore === 'High Trust';
 
   return (
-    <div className={`w-full max-w-7xl mx-auto px-1 sm:px-2 lg:px-4 py-1 sm:py-2 h-full flex flex-col overflow-hidden transition-colors duration-200 ${
+    <div className={`w-full flex-1 min-h-0 flex flex-col overflow-hidden transition-colors duration-200 ${
       isDark ? 'text-slate-100' : 'text-slate-900'
     }`}>
-      {/* Desktop Multi-Panel Container */}
-      <div className={`flex-1 flex h-full rounded-2xl sm:rounded-3xl border overflow-hidden shadow-md transition-all ${
-        isDark ? 'bg-[#0B132B] border-slate-800' : 'bg-white border-slate-200'
+      {/* Desktop Multi-Panel Container — Messenger style: full-bleed on mobile, floating card on desktop */}
+      <div className={`flex-1 min-h-0 flex overflow-hidden transition-all ${
+        isDark ? 'bg-[#0B132B] sm:m-2 sm:rounded-2xl sm:border sm:border-slate-800 shadow-md' : 'bg-white sm:m-2 sm:rounded-2xl sm:border sm:border-slate-200 shadow-md'
       }`}>
         {/* LEFT PANEL: Trade Conversations List */}
         {showLeftSidebar && (
@@ -357,10 +353,10 @@ export const ChatView: React.FC<ChatViewProps> = ({
           </div>
         )}
 
-        {/* CENTER PANEL: Main Chat Conversation */}
-        <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0 bg-transparent relative">
-          {/* Chat Top Header */}
-          <div className={`flex-none shrink-0 px-3 py-2 sm:px-4 sm:py-2.5 border-b flex items-center justify-between gap-3 ${
+        {/* CENTER PANEL: Main Chat Conversation — Messenger style */}
+        <div className="flex-1 min-h-0 flex flex-col overflow-hidden min-w-0 bg-transparent relative">
+          {/* Chat Top Header — compact 52px like Messenger */}
+          <div className={`flex-none h-[52px] px-2 sm:px-3 border-b flex items-center justify-between gap-2 ${
             isDark ? 'bg-[#0B132B] border-slate-800' : 'bg-white border-slate-200/80'
           }`}>
             <div className="flex items-center gap-2.5 min-w-0">
@@ -395,33 +391,32 @@ export const ChatView: React.FC<ChatViewProps> = ({
                 <img
                   src={match.partner.avatar}
                   alt={match.partner.name}
-                  className="w-9 h-9 rounded-full object-cover ring-2 ring-emerald-500/30"
+                  className="w-8 h-8 rounded-full object-cover ring-1 ring-emerald-500/30"
                 />
                 {partnerIsOnline ? (
-                  <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">
+                  <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white dark:border-slate-900"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border-2 border-white dark:border-slate-900"></span>
                   </span>
                 ) : (
-                  <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-slate-400 border-2 border-white dark:border-slate-900" />
+                  <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-slate-400 border-2 border-white dark:border-slate-900" />
                 )}
               </div>
 
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <h3 className="font-bold text-xs sm:text-sm leading-tight truncate text-slate-900 dark:text-white">
+              <div className="min-w-0 leading-none">
+                <div className="flex items-center gap-1">
+                  <h3 className="font-bold text-[13px] leading-tight truncate text-slate-900 dark:text-white">
                     {match.partner.name}
                   </h3>
-                  <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                  <span className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
                     <ShieldCheck className="w-3 h-3" /> Verified
                   </span>
                 </div>
                 
-                {/* Real-time Presence Text */}
-                <div className="text-[10px] flex items-center gap-1.5 truncate font-medium mt-0.5">
+                {/* Real-time Presence Text — single compact line like Messenger */}
+                <div className="text-[11px] flex items-center gap-1 truncate font-medium mt-[2px]">
                   {partnerIsOnline ? (
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
                       Active now
                     </span>
                   ) : (
@@ -429,13 +424,11 @@ export const ChatView: React.FC<ChatViewProps> = ({
                       {match.partner.lastActive || 'Offline'}
                     </span>
                   )}
-                  <span className="text-slate-400">•</span>
-                  <span className="inline-flex items-center gap-0.5 text-amber-500 font-bold">
-                    <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                  <span className="text-slate-300 dark:text-slate-600">•</span>
+                  <span className="inline-flex items-center gap-0.5 text-amber-500 font-semibold">
+                    <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-500" />
                     <span>{match.partner.rating ? match.partner.rating.toFixed(1) : '5.0'}</span>
                   </span>
-                  <span className="text-slate-400">•</span>
-                  <span className="text-emerald-700 dark:text-emerald-400 font-bold">{match.partner.trustScore}</span>
                 </div>
               </div>
             </div>
@@ -545,55 +538,47 @@ export const ChatView: React.FC<ChatViewProps> = ({
             </div>
           </div>
 
-          {/* Desktop Compact Barter Strip */}
-          <div className={`flex-none shrink-0 px-3 py-1.5 sm:px-4 sm:py-1.5 border-b flex items-center justify-between text-xs font-medium ${
-            isDark ? 'bg-slate-900/70 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-800'
+          {/* Compact Barter Strip — single line, 30px */}
+          <div className={`flex-none h-[30px] px-2 sm:px-3 border-b flex items-center gap-2 text-[11px] ${
+            isDark ? 'bg-slate-900/70 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
           }`}>
-            <div className="flex items-center gap-1.5 truncate">
-              <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">OFFERING:</span>
-              <span className="font-bold truncate max-w-[140px] sm:max-w-[220px] text-xs text-slate-900 dark:text-white">
-                {match.myOffering.title} ({match.myOffering.condition})
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold shrink-0 border border-emerald-500/20 text-[10px]">
-              <ArrowRightLeft className="w-3 h-3" />
-              <span>Direct Barter</span>
-            </div>
-
-            <div className="flex items-center gap-1.5 truncate text-right">
-              <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">RECEIVING:</span>
-              <span className="font-bold truncate max-w-[140px] sm:max-w-[220px] text-xs text-slate-900 dark:text-white">
-                {match.theirOffering.title} ({match.theirOffering.condition})
-              </span>
-            </div>
+            <span className="font-bold truncate max-w-[38%] text-slate-900 dark:text-white">
+              {match.myOffering.title}
+            </span>
+            <span className="flex items-center gap-1 px-1.5 py-[1px] rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold shrink-0 border border-emerald-500/20 text-[10px]">
+              <ArrowRightLeft className="w-2.5 h-2.5" />
+              <span className="hidden xs:inline">Barter</span>
+            </span>
+            <span className="font-bold truncate max-w-[38%] text-slate-900 dark:text-white">
+              {match.theirOffering.title}
+            </span>
+            <span className="ml-auto hidden sm:block text-[10px] text-slate-400 truncate shrink-0">{match.status}</span>
           </div>
 
-          {/* Messages Stream Scroll Area */}
-          <div className="flex-1 overflow-y-auto min-h-0 p-2.5 sm:p-3.5">
-            {messages.map((msg) => {
+          {/* Messages Stream — spacious with small bubbles for max visibility */}
+          <div className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-6 py-4">
+            {messages.map((msg, idx) => {
               if (msg.isSystemEvent || msg.senderId === 'system') {
                 return (
-                  <div key={msg.id} className="flex justify-center my-2.5">
-                    <div className="px-3 py-1 rounded-full text-[11px] font-semibold bg-slate-200/80 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 flex items-center gap-1.5 shadow-2xs border border-black/5 dark:border-white/5">
+                  <div key={msg.id} className="flex justify-center my-2">
+                    <div className="max-w-[90%] px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-200/70 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 flex items-center gap-1.5 border border-black/5 dark:border-white/5 text-center">
                       {msg.systemEventType === 'trade_finalized' ? (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                        <CheckCircle2 className="w-3 h-3 text-purple-500 shrink-0" />
                       ) : msg.systemEventType === 'trade_rejected' ? (
-                        <XCircle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                        <XCircle className="w-3 h-3 text-rose-500 shrink-0" />
                       ) : (
-                        <Sparkles className="w-3.5 h-3.5 text-teal-500 shrink-0" />
+                        <Sparkles className="w-3 h-3 text-teal-500 shrink-0" />
                       )}
-                      <span>{msg.text || (msg.systemEventType === 'initiated' ? 'Trade negotiation initiated' : 'System update')}</span>
+                      <span className="truncate">{msg.text || (msg.systemEventType === 'initiated' ? 'Trade negotiation initiated' : 'System update')}</span>
                       {msg.systemEventType === 'trade_finalized' && (
                         <button
                           type="button"
                           onClick={() => setShowReceiptModal(true)}
-                          className="ml-1 text-[11px] font-bold text-purple-600 dark:text-purple-400 hover:underline cursor-pointer"
+                          className="text-[11px] font-bold text-purple-600 dark:text-purple-400 hover:underline cursor-pointer shrink-0"
                         >
-                          View Receipt
+                          Receipt
                         </button>
                       )}
-                      <span className="text-[9px] text-slate-400 font-normal">({msg.timestamp})</span>
                     </div>
                   </div>
                 );
@@ -602,30 +587,44 @@ export const ChatView: React.FC<ChatViewProps> = ({
               const isMe = msg.senderId === 'user-me' || msg.senderId === 'me' || msg.senderId === 'current-user' || msg.senderId !== match.partner.id;
               const isEditingThis = editingMessageId === msg.id;
 
+              // Messenger grouping: collapse avatar/name/timestamp inside same-sender runs
+              const prev = messages[idx - 1];
+              const next = messages[idx + 1];
+              const prevIsSame = !!prev && !prev.isSystemEvent && prev.senderId !== 'system' && (prev.senderId === msg.senderId || ((prev.senderId !== match.partner.id) === isMe));
+              const nextIsSame = !!next && !next.isSystemEvent && next.senderId !== 'system' && (next.senderId === msg.senderId || ((next.senderId !== match.partner.id) === isMe));
+              const isFirstInGroup = !prevIsSame;
+              const isLastInGroup = !nextIsSame;
+
               return (
                 <div
                   key={msg.id}
-                  className={`group flex items-start gap-2 mb-2.5 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}
+                  className={`group flex items-end gap-2 ${isMe ? 'justify-end' : 'justify-start'} ${isFirstInGroup ? 'mt-4' : 'mt-1'}`}
                 >
-                  {/* User Avatar */}
-                  <img
-                    src={msg.senderAvatar || (isMe ? CURRENT_USER.avatar : match.partner.avatar)}
-                    alt={msg.senderName || (isMe ? CURRENT_USER.name : match.partner.name)}
-                    className={`w-7 h-7 rounded-full object-cover shrink-0 mt-0.5 ${
-                      isMe ? 'ring-1 ring-teal-500/30' : 'ring-1 ring-slate-300 dark:ring-slate-700'
-                    }`}
-                  />
+                  {/* Avatar only on last in group for partner (Messenger); spacer otherwise. No avatar for own. */}
+                  {!isMe ? (
+                    isLastInGroup ? (
+                      <img
+                        src={msg.senderAvatar || match.partner.avatar}
+                        alt={msg.senderName || match.partner.name}
+                        className="w-7 h-7 rounded-full object-cover shrink-0 ring-1 ring-slate-300 dark:ring-slate-700"
+                      />
+                    ) : (
+                      <div className="w-7 shrink-0" />
+                    )
+                  ) : null}
 
-                  {/* Message Content & Name */}
-                  <div className={`flex flex-col max-w-[85%] sm:max-w-[75%] ${isMe ? 'items-end' : 'items-start'}`}>
-                    {/* Sender Name */}
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 mb-0.5 font-medium px-1">
-                      {msg.senderName || (isMe ? CURRENT_USER.name : match.partner.name)}
-                    </span>
+                  {/* Message column — narrower for smaller bubbles + airy sides */}
+                  <div className={`flex flex-col min-w-0 max-w-[70%] sm:max-w-[55%] ${isMe ? 'items-end' : 'items-start'}`}>
+                    {/* Sender name only on first in group for partner */}
+                    {!isMe && isFirstInGroup && (
+                      <span className="text-[11px] text-gray-500 dark:text-gray-400 font-medium px-2 mb-1 truncate max-w-full">
+                        {msg.senderName || match.partner.name}
+                      </span>
+                    )}
 
                     {/* Chat Bubble / Inline Editor */}
                     {isEditingThis ? (
-                      <div className={`p-2.5 rounded-2xl border w-full space-y-2 ${
+                      <div className={`px-2.5 py-1.5 rounded-2xl border w-full ${
                         isDark ? 'bg-slate-900 border-emerald-500' : 'bg-white border-emerald-600 shadow-md'
                       }`}>
                         <input
@@ -637,92 +636,85 @@ export const ChatView: React.FC<ChatViewProps> = ({
                             if (e.key === 'Enter') handleSaveEdit(msg.id);
                             if (e.key === 'Escape') handleCancelEdit();
                           }}
-                          className="w-full text-xs sm:text-sm bg-transparent outline-none text-slate-900 dark:text-white"
+                          className="w-full text-[13px] bg-transparent outline-none text-slate-900 dark:text-white"
                         />
-                        <div className="flex items-center justify-end gap-1.5 pt-1 border-t border-slate-200 dark:border-slate-800">
+                        <div className="flex items-center justify-end gap-1 pt-1 mt-1 border-t border-slate-200 dark:border-slate-800">
                           <button
                             type="button"
                             onClick={handleCancelEdit}
-                            className="px-2 py-0.5 rounded text-[10px] font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                            className="px-2 py-0.5 rounded text-[11px] font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
                           >
                             Cancel
                           </button>
                           <button
                             type="button"
                             onClick={() => handleSaveEdit(msg.id)}
-                            className="px-2.5 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold shadow-xs"
+                            className="px-2.5 py-0.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold"
                           >
                             Save
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <div className="relative group/bubble flex items-center gap-2">
-                        {/* Edit & Delete Action Buttons for user's own sent message */}
+                      <div className={`relative group/bubble flex items-center gap-1 min-w-0 max-w-full ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                        {/* Edit & Delete for own */}
                         {isMe && !isLocked && !msg.isDeleted && (
-                          <div className="opacity-0 group-hover/bubble:opacity-100 transition-opacity flex items-center gap-1.5 p-0.5 rounded-lg bg-slate-200/60 dark:bg-slate-800/70 backdrop-blur-xs">
+                          <div className="opacity-0 group-hover/bubble:opacity-100 transition-opacity flex items-center shrink-0">
                             {onEditMessage && (
                               <button
                                 type="button"
                                 onClick={() => handleStartEdit(msg)}
-                                className="p-1.5 rounded-md transition-colors text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-300/60 dark:hover:bg-slate-700/60 cursor-pointer"
+                                className="p-1 rounded-full transition-colors text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
                                 title="Edit message"
                                 aria-label="Edit message"
                               >
-                                <Edit2 className="w-3.5 h-3.5" />
+                                <Edit2 className="w-3 h-3" />
                               </button>
                             )}
-
                             <button
                               type="button"
                               onClick={() => handleDelete(msg.id)}
-                              className="p-1.5 rounded-md transition-colors text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/15 cursor-pointer"
+                              className="p-1 rounded-full transition-colors text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/15 cursor-pointer"
                               title="Delete message"
                               aria-label="Delete message"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-3 h-3" />
                             </button>
                           </div>
                         )}
 
-                        <div className={`rounded-2xl px-3 py-2 sm:px-3.5 sm:py-2 space-y-1 text-xs sm:text-sm shadow-2xs max-w-full min-w-0 break-words [overflow-wrap:anywhere] overflow-hidden ${
+                        <div className={`px-2.5 py-1 text-[12.5px] leading-[1.55] shadow-2xs min-w-0 break-words [overflow-wrap:anywhere] overflow-hidden ${
                           msg.isDeleted
                             ? isDark
-                              ? 'bg-slate-900/60 text-slate-400 border border-slate-800/80 rounded-tr-xs'
-                              : 'bg-slate-100 text-slate-500 border border-slate-200 rounded-tr-xs'
+                              ? 'bg-slate-900/60 text-slate-400 border border-slate-800/80 rounded-[18px] italic'
+                              : 'bg-slate-100 text-slate-500 border border-slate-200 rounded-[18px] italic'
                             : isMe
-                            ? 'bg-teal-600 dark:bg-teal-700 text-white rounded-tr-xs'
+                            ? `bg-teal-600 dark:bg-teal-700 text-white rounded-[18px] ${isLastInGroup ? 'rounded-br-md' : 'rounded-br-lg'} ${isFirstInGroup ? 'rounded-tr-[18px]' : 'rounded-tr-lg'}`
                             : isDark
-                            ? 'bg-[#242526] text-slate-100 border border-slate-700/40 rounded-tl-xs'
-                            : 'bg-slate-100 text-slate-900 border border-slate-200 rounded-tl-xs'
+                            ? `bg-[#242526] text-slate-100 rounded-[18px] ${isLastInGroup ? 'rounded-bl-md' : 'rounded-bl-lg'} ${isFirstInGroup ? 'rounded-tl-[18px]' : 'rounded-tl-lg'}`
+                            : `bg-slate-100 text-slate-900 rounded-[18px] ${isLastInGroup ? 'rounded-bl-md' : 'rounded-bl-lg'} ${isFirstInGroup ? 'rounded-tl-[18px]' : 'rounded-tl-lg'}`
                         }`}>
                           {msg.isDeleted ? (
-                            <p className="italic text-xs sm:text-sm text-slate-400 dark:text-slate-400 select-none py-0.5">
-                              This message was deleted.
-                            </p>
+                            <p className="text-[12.5px] select-none">This message was deleted.</p>
                           ) : (
                             <>
                               {msg.text && (
-                                <p className="leading-snug whitespace-pre-wrap text-xs sm:text-sm break-words [overflow-wrap:anywhere]">{msg.text}</p>
+                                <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{msg.text}</p>
                               )}
 
                               {msg.imageUrl && (
                                 <div
                                   onClick={() => setLightboxData({ images: [msg.imageUrl!], title: msg.imageCaption || 'Trade attachment', initialIndex: 0 })}
-                                  className="rounded-xl overflow-hidden mt-1.5 border border-black/10 dark:border-white/10 cursor-zoom-in group/img relative"
+                                  className="rounded-xl overflow-hidden mt-1 border border-black/10 dark:border-white/10 cursor-zoom-in group/img relative"
                                   title="Click to view full uncropped photo"
                                 >
                                   <img
                                     src={msg.imageUrl}
                                     alt="Trade item preview"
-                                    className="w-full max-h-52 object-cover group-hover/img:scale-105 transition-transform duration-200"
+                                    className="w-full max-h-32 object-cover group-hover/img:scale-105 transition-transform duration-200"
                                   />
-                                  <div className="absolute top-1.5 right-1.5 p-1 rounded-md bg-black/70 text-white opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center gap-1 text-[10px] font-bold">
-                                    <Maximize2 className="w-3 h-3" />
-                                    <span>Expand</span>
-                                  </div>
                                   {msg.imageCaption && (
-                                    <div className="p-1.5 bg-black/50 text-[11px] text-white backdrop-blur-xs">
+                                    <div className="p-1 bg-black/50 text-[11px] text-white">
                                       {msg.imageCaption}
                                     </div>
                                   )}
@@ -730,21 +722,15 @@ export const ChatView: React.FC<ChatViewProps> = ({
                               )}
                             </>
                           )}
-
-                          {/* Timestamp & Edited status */}
-                          <div className={`text-[10px] text-right font-medium mt-0.5 flex items-center justify-end gap-1 ${
-                            msg.isDeleted
-                              ? 'text-slate-400/80 dark:text-slate-500'
-                              : isMe
-                              ? 'text-teal-100'
-                              : 'text-slate-500 dark:text-slate-400'
-                          }`}>
-                            {msg.isEdited && !msg.isDeleted && (
-                              <span className="italic text-[9px] opacity-85">(edited)</span>
-                            )}
-                            <span title={`Sent at: ${msg.createdAt || msg.timestamp}`}>{msg.timestamp}</span>
-                          </div>
                         </div>
+                      </div>
+                    )}
+
+                    {/* Timestamp only on last in group — Messenger style */}
+                    {isLastInGroup && !isEditingThis && (
+                      <div className={`text-[10px] text-slate-400 dark:text-slate-500 opacity-80 px-2 mt-1 flex items-center gap-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
+                        {msg.isEdited && !msg.isDeleted && <span className="italic">Edited •</span>}
+                        <span title={`Sent at: ${msg.createdAt || msg.timestamp}`}>{msg.timestamp}</span>
                       </div>
                     )}
                   </div>
@@ -755,88 +741,89 @@ export const ChatView: React.FC<ChatViewProps> = ({
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Replies Strip (Disabled when locked) */}
+          {/* Quick Replies — collapsed by default for max viewport, Messenger pill style */}
           {!isLocked && (
-            <div className={`flex-none shrink-0 px-2.5 py-1 border-t flex items-center gap-1.5 overflow-x-auto no-scrollbar ${
-              isDark ? 'bg-[#0B132B] border-slate-800' : 'bg-slate-50 border-slate-200'
+            <div className={`flex-none border-t ${
+              isDark ? 'bg-[#0B132B] border-slate-800' : 'bg-white border-slate-200'
             }`}>
-              <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase shrink-0">Quick reply:</span>
-              {[
-                '📍 Meet at APC Cafeteria 2 PM',
-                '🔍 Confirm working condition',
-                '🤝 Ready to finalize trade',
-                '📸 Can you send a close-up photo?'
-              ].map((text) => (
-                <button
-                  key={text}
-                  onClick={() => handleQuickReply(text)}
-                  className={`whitespace-nowrap px-2 py-0.5 rounded-md text-[11px] font-semibold border transition-all active:scale-95 ${
-                    isDark 
-                      ? 'bg-slate-900 border-slate-700 text-slate-300 hover:border-emerald-400' 
-                      : 'bg-white border-slate-200 text-slate-800 hover:border-emerald-500 hover:text-emerald-700 shadow-2xs'
-                  }`}
-                >
-                  {text}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Locked Status Banner (When Finalized or Rejected) */}
-          {isLocked && (
-            <div className="flex-none shrink-0 p-2 sm:px-3">
-              {isFinalized ? (
-                <div className="p-3 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs font-semibold flex items-center gap-2.5 shadow-sm">
-                  <Lock className="w-4 h-4 text-purple-500 shrink-0" />
-                  <div className="flex-1">
-                    <span className="font-bold">Trade Finalized: </span>
-                    <span>This exchange has been locked and archived. Messaging is disabled.</span>
-                  </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-600 dark:text-purple-300 border border-purple-500/30">
-                    Archived
-                  </span>
-                </div>
-              ) : (
-                <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center gap-2.5 shadow-sm">
-                  <XCircle className="w-4 h-4 text-rose-500 shrink-0" />
-                  <div className="flex-1">
-                    <span className="font-bold">Trade Rejected: </span>
-                    <span>This proposal was rejected. Messaging has been closed for this trade.</span>
-                  </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/30">
-                    Archived
-                  </span>
+              <button
+                type="button"
+                onClick={() => setShowQuickReplies((v) => !v)}
+                className="w-full flex items-center justify-center gap-1 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+              >
+                <Sparkles className="w-3 h-3" />
+                <span>{showQuickReplies ? 'Hide suggestions' : 'Show suggestions'}</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${showQuickReplies ? 'rotate-180' : ''}`} />
+              </button>
+              {showQuickReplies && (
+                <div className="px-2 pb-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                  {[
+                    'pwede mag tanong?',
+                    '📍 Meet at APC Cafeteria 2 PM',
+                    '🔍 Confirm working condition',
+                    '🤝 Ready to finalize trade',
+                    '📸 Can you send a close-up photo?'
+                  ].map((text) => (
+                    <button
+                      key={text}
+                      onClick={() => handleQuickReply(text)}
+                      className={`whitespace-nowrap px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all active:scale-95 shrink-0 ${
+                        isDark 
+                          ? 'bg-slate-900 border-slate-700 text-slate-300 hover:border-emerald-400' 
+                          : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-700'
+                      }`}
+                    >
+                      {text}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
           )}
 
-          {/* Message Input Bar (Locked and Disabled if Trade is Finalized or Rejected) */}
-          <div className={`flex-none shrink-0 p-1.5 sm:px-3 sm:py-1.5 border-t ${
+          {/* Locked Status Banner (When Finalized or Rejected) — compact single line */}
+          {isLocked && (
+            <div className="flex-none px-2 py-1">
+              {isFinalized ? (
+                <div className="px-2.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-700 dark:text-purple-300 text-[11px] font-semibold flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                  <span className="truncate flex-1">Trade finalized — messaging disabled.</span>
+                </div>
+              ) : (
+                <div className="px-2.5 py-1.5 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-[11px] font-semibold flex items-center gap-1.5">
+                  <XCircle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                  <span className="truncate flex-1">Trade rejected — messaging closed.</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Message Input Bar — Messenger pill + circular send */}
+          <div className={`flex-none px-2 py-2 border-t ${
             isDark ? 'bg-[#0B132B] border-slate-800' : 'bg-white border-slate-200'
           }`}>
-            <form onSubmit={handleSend} className="flex items-center gap-1.5">
+            <form onSubmit={handleSend} className="flex items-end gap-1.5">
               {/* Attachment Button */}
               <button
                 type="button"
                 disabled={isLocked}
                 onClick={() => !isLocked && setShowAttachmentMenu(!showAttachmentMenu)}
-                className={`p-1.5 rounded-lg transition-colors ${
+                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                   isLocked
                     ? 'opacity-40 cursor-not-allowed text-slate-400'
                     : showAttachmentMenu
-                    ? 'bg-emerald-500 text-slate-950'
+                    ? 'bg-emerald-500 text-white'
                     : isDark
-                    ? 'text-slate-400 hover:bg-slate-800'
-                    : 'text-slate-600 hover:bg-slate-100'
+                    ? 'text-emerald-400 hover:bg-slate-800'
+                    : 'text-emerald-600 hover:bg-slate-100'
                 }`}
                 title={isLocked ? "Messaging locked" : "Attach photo"}
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-5 h-5" />
               </button>
 
-              {/* Text Input */}
-              <div className="flex-1 relative">
+              {/* Text Input — pill */}
+              <div className="flex-1 min-w-0">
                 <input
                   id="input-chat-message"
                   type="text"
@@ -851,29 +838,29 @@ export const ChatView: React.FC<ChatViewProps> = ({
                   }
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  className={`w-full py-1.5 px-3 rounded-lg text-xs sm:text-sm border outline-none transition-all ${
+                  className={`w-full py-2 px-3.5 rounded-full text-[13px] outline-none transition-all ${
                     isLocked
-                      ? 'bg-slate-100 dark:bg-slate-900 border-slate-300 dark:border-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed placeholder:text-slate-400 dark:placeholder:text-slate-600'
+                      ? 'bg-slate-100 dark:bg-slate-900 text-slate-400 cursor-not-allowed placeholder:text-slate-400'
                       : isDark 
-                      ? 'bg-slate-900 border-slate-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-white placeholder:text-slate-500' 
-                      : 'bg-slate-50 border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/15 text-slate-900 placeholder:text-slate-400'
+                      ? 'bg-slate-800 border border-transparent focus:border-emerald-500 text-white placeholder:text-slate-500' 
+                      : 'bg-slate-100 border border-transparent focus:border-emerald-500 focus:bg-white text-slate-900 placeholder:text-slate-500'
                   }`}
                 />
               </div>
 
-              {/* Send Button */}
+              {/* Send Button — circular like Messenger */}
               <button
                 id="btn-send-chat"
                 type="submit"
                 disabled={isLocked || (!inputText.trim() && !selectedPhotoUrl)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-all shadow-xs ${
+                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all ${
                   !isLocked && (inputText.trim() || selectedPhotoUrl)
                     ? 'bg-emerald-600 hover:bg-emerald-500 text-white active:scale-95 cursor-pointer'
-                    : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed'
+                    : 'text-slate-300 dark:text-slate-600 cursor-not-allowed'
                 }`}
+                title="Send"
               >
-                <span>Send</span>
-                <Send className="w-3.5 h-3.5" />
+                <Send className="w-4 h-4" />
               </button>
             </form>
 

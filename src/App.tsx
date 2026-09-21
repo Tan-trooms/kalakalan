@@ -395,6 +395,32 @@ export default function App() {
   ): string => {
     const text = messageText.toLowerCase().trim();
 
+    // 0. Automatic Simulation Response: "pwede mag tanong?" -> "Never Grow Old?"
+    const normalizedInput = text
+      .replace(/[?!.,;:]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const isAskingPwedeMagTanong =
+      normalizedInput === 'pwede mag tanong' ||
+      normalizedInput === 'pwede magtanong' ||
+      normalizedInput === 'pwede ba mag tanong' ||
+      normalizedInput === 'pwede ba magtanong' ||
+      normalizedInput === 'pwede po mag tanong' ||
+      normalizedInput === 'pwede po magtanong' ||
+      normalizedInput === 'pwede bang mag tanong' ||
+      normalizedInput === 'pwede bang magtanong' ||
+      normalizedInput === 'pwede po bang magtanong' ||
+      normalizedInput === 'pwede po bang mag tanong' ||
+      /\bpwede\b.*?\bmag\s*tanong\b/i.test(text) ||
+      /\bpede\b.*?\bmag\s*tanong\b/i.test(text) ||
+      text.includes('pwede mag tanong') ||
+      text.includes('pwede magtanong');
+
+    if (isAskingPwedeMagTanong) {
+      return 'Never Grow Old?';
+    }
+
     // 1. Negative Sentiment & Rejection / Cancellation Check
     if (
       /\b(no|nope|don't\s+want|dont\s+want|don't\s+like|dont\s+like|no\s+thanks|no\s+thank\s+you|cancel|reject|nevermind|never\s+mind|pass|not\s+interested|not\s+into\s+it|decline)\b/i.test(text) ||
@@ -667,12 +693,12 @@ export default function App() {
 
   return (
     <div className={`transition-colors duration-200 ${
-      activeTab === 'chat' ? 'h-screen overflow-hidden flex flex-col' : 'min-h-screen flex flex-col'
+      activeTab === 'chat' ? 'h-[100dvh] overflow-hidden flex flex-col' : 'min-h-screen flex flex-col'
     } ${
       theme === 'dark' ? 'bg-[#060a17]' : 'bg-slate-100'
     }`}>
       <div className={`w-full relative flex flex-col transition-colors duration-200 ${
-        activeTab === 'chat' ? 'h-full overflow-hidden' : 'min-h-screen'
+        activeTab === 'chat' ? 'h-full min-h-0 overflow-hidden' : 'min-h-screen'
       } ${
         theme === 'dark' ? 'bg-[#060a17]' : 'bg-[#f8fafc]'
       }`}>
@@ -703,7 +729,7 @@ export default function App() {
         />
 
         {/* Tab Views */}
-        <main className={`flex-1 relative w-full ${activeTab === 'chat' ? 'overflow-hidden flex flex-col min-h-0' : ''}`}>
+        <main className={`flex-1 min-h-0 relative w-full ${activeTab === 'chat' ? 'overflow-hidden flex flex-col' : ''}`}>
           {activeTab === 'market' && (
             <MarketView
               items={items}
@@ -766,7 +792,8 @@ export default function App() {
           )}
         </main>
 
-        {/* Bottom Navigation for Mobile Only */}
+        {/* Bottom Navigation for Mobile Only — hidden in chat for max message viewport */}
+        {activeTab !== 'chat' && (
         <BottomNav
           activeTab={activeTab}
           onChangeTab={(tab) => {
@@ -777,6 +804,7 @@ export default function App() {
           unreadMatches={matches.filter((m) => m.unreadCount).length}
           unreadMessages={2}
         />
+        )}
 
         {/* Side Menu Drawer */}
         <Drawer
