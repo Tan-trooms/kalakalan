@@ -695,12 +695,12 @@ export default function App() {
     <div className={`transition-colors duration-200 ${
       activeTab === 'chat' ? 'h-[100dvh] overflow-hidden flex flex-col' : 'min-h-screen flex flex-col'
     } ${
-      theme === 'dark' ? 'bg-[#060a17]' : 'bg-slate-100'
+      theme === 'dark' ? 'bg-[#18191a]' : 'bg-[#f0f2f5]'
     }`}>
       <div className={`w-full relative flex flex-col transition-colors duration-200 ${
         activeTab === 'chat' ? 'h-full min-h-0 overflow-hidden' : 'min-h-screen'
       } ${
-        theme === 'dark' ? 'bg-[#060a17]' : 'bg-[#f8fafc]'
+        theme === 'dark' ? 'bg-[#18191a]' : 'bg-[#f0f2f5]'
       }`}>
         {/* Floating Feedback Toast */}
         {toastMessage && (
@@ -792,7 +792,7 @@ export default function App() {
           )}
         </main>
 
-        {/* Bottom Navigation for Mobile Only — hidden in chat for max message viewport */}
+        {/* Bottom dock — mobile-first primary nav, floating on desktop; hidden in chat for max message viewport */}
         {activeTab !== 'chat' && (
         <BottomNav
           activeTab={activeTab}

@@ -336,7 +336,7 @@ export const UploadView: React.FC<UploadViewProps> = ({
   };
 
   return (
-    <div className={`pb-28 pt-4 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full min-h-screen transition-colors duration-200 ${
+    <div className={`pb-36 pt-6 sm:pt-8 px-5 sm:px-8 lg:px-10 max-w-4xl mx-auto w-full min-h-screen transition-colors duration-200 ${
       isDark ? 'text-slate-100' : 'text-slate-900'
     }`}>
       {/* Title & Subtitle */}
