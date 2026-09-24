@@ -779,8 +779,13 @@ export default function App() {
               messages={currentMessages}
               theme={theme}
               currentUser={currentUser}
+              unreadMatches={matches.filter((m) => m.unreadCount).length}
               onToggleTheme={toggleTheme}
               onBack={() => setActiveTab('matches')}
+              onNavigateTab={(tab) => {
+                if (tab !== 'upload') setEditingItem(null);
+                setActiveTab(tab);
+              }}
               onSelectMatch={(mId) => setActiveMatchId(mId)}
               onSendMessage={handleSendMessage}
               onEditMessage={handleEditMessage}
@@ -792,18 +797,18 @@ export default function App() {
           )}
         </main>
 
-        {/* Bottom dock — mobile-first primary nav, floating on desktop; hidden in chat for max message viewport */}
+        {/* Bottom dock — mobile-first primary nav, floating on desktop; hidden in chat for clean Messenger dock */}
         {activeTab !== 'chat' && (
-        <BottomNav
-          activeTab={activeTab}
-          onChangeTab={(tab) => {
-            if (tab !== 'upload') setEditingItem(null);
-            setActiveTab(tab);
-          }}
-          theme={theme}
-          unreadMatches={matches.filter((m) => m.unreadCount).length}
-          unreadMessages={2}
-        />
+          <BottomNav
+            activeTab={activeTab}
+            onChangeTab={(tab) => {
+              if (tab !== 'upload') setEditingItem(null);
+              setActiveTab(tab);
+            }}
+            theme={theme}
+            unreadMatches={matches.filter((m) => m.unreadCount).length}
+            unreadMessages={2}
+          />
         )}
 
         {/* Side Menu Drawer */}

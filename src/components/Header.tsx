@@ -53,27 +53,31 @@ export const Header: React.FC<HeaderProps> = ({
             <Menu className="w-5 h-5" />
           </button>
 
-          {/* Brand Logo & Name */}
-          <div 
+          {/* Brand Logo & Name (Routes back to Market feed) */}
+          <button 
+            type="button"
+            id="btn-header-logo"
             onClick={() => onChangeTab && onChangeTab('market')}
-            className="flex items-center gap-2.5 cursor-pointer group"
+            className="flex items-center gap-2.5 cursor-pointer group text-left border-0 bg-transparent p-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-xl"
+            title="Go to Marketplace feed"
+            aria-label="Kalakalan APC Barter - Go to Marketplace"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white font-black text-base shadow-sm shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white font-black text-base shadow-sm shadow-emerald-500/20 group-hover:scale-105 transition-transform shrink-0">
               K
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className={`text-lg font-bold tracking-tight ${
+                <span className={`text-lg font-bold tracking-tight group-hover:text-emerald-500 transition-colors ${
                   isDark ? 'text-white' : 'text-slate-900'
                 }`}>
                   Kalakalan
                 </span>
-                <span className="hidden sm:inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="hidden sm:inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 group-hover:bg-emerald-500/20 transition-colors">
                   APC Barter
                 </span>
               </div>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* Right Actions: Post Action Button, Theme Toggle & User Profile */}
